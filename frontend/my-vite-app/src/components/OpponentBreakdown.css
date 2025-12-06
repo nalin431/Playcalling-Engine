@@ -1,0 +1,137 @@
+.opponent-breakdown {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.opponent-breakdown h2 {
+  margin-top: 0;
+  color: #0B162A;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.breakdown-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.breakdown-section h3 {
+  color: #0B162A;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #C83803;
+  padding-bottom: 0.5rem;
+}
+
+.rating-item {
+  margin-bottom: 1rem;
+}
+
+.rating-label {
+  display: block;
+  font-weight: 600;
+  color: #0B162A;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.rating-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rating-bar {
+  flex: 1;
+  height: 24px;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+  min-width: 20px;
+}
+
+.rating-value {
+  font-weight: 700;
+  color: #0B162A;
+  min-width: 60px;
+  text-align: right;
+}
+
+.coverage-type {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coverage-label {
+  font-weight: 600;
+  color: #0B162A;
+}
+
+.coverage-value {
+  background: #0B162A;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.strengths-list,
+.weaknesses-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.strength-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+  border-radius: 4px;
+  color: #155724;
+  font-weight: 500;
+}
+
+.weakness-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f8d7da;
+  border-left: 4px solid #dc3545;
+  border-radius: 4px;
+  color: #721c24;
+  font-weight: 500;
+}
+
+.formation-info {
+  background: #e7f3ff;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #0B162A;
+  color: #0B162A;
+  font-weight: 600;
+  margin: 0;
+}
+
