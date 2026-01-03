@@ -1,6 +1,9 @@
 from pathlib import Path
 import pandas as pd
 
+##ML libraries
+from sklearn.linear_model import LogisticRegression
+
 # Feature set for training (kept here for reproducible experiments).
 FEATURE_COLUMNS = [
     "down",
@@ -43,4 +46,11 @@ dfraw = pd.read_parquet(DATA_PATH)
 
 dftrain = dfraw[FEATURE_COLUMNS + TARGET_COLUMNS]
 dftrain = dftrain.dropna()
+
+
+
+
+
+##Classifcation model training: scikit-learn logistic regression
+
 
