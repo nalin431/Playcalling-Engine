@@ -12,12 +12,13 @@ pbp_pandas = pbp.to_pandas()
 pbp_2025 = pbp_pandas[pbp_pandas['season'] == 2025]
 pbp_bears = pbp_2025[pbp_2025['posteam'] == 'CHI']
 pbp_offense_raw = pbp_bears[pbp_bears['play_type'].isin(['run', 'pass'])]
-##all of bears offensive plays in pbp_offense_raw (pandas dataframe)
+##all of bears offensive plays in pbp_offense_raw (pandas dataframe); important to note we're not training on penalties/no play
 
 pbp_offense = pbp_offense_raw.copy()
 
-# Drop rows with missing core fields.
+# Drop rows with missing core fields and filter out 0 ydstogo plays
 pbp_offense = pbp_offense.dropna(subset=['down', 'ydstogo', 'yardline_100', 'yards_gained'])
+pbp_offense = pbp_offense[pbp_offense["ydstogo"] > 0]
 
 # Success definition: 40/60/100 rule by down.
 success_conditions = [
@@ -29,15 +30,47 @@ pbp_offense['success'] = np.select(success_conditions, [1, 1, 1], default=0)
 
 
 
+# pass_depth_bucket
+if 'air_yards' in pbp_offense.columns:
+    pbp_offense["pass_depth_bucket"] = "not_pass"  
 
-ARTIFACTS_DIR = Path("..") / "artifacts"
+    is_pass = pbp_offense["play_type"] == "pass"
+
+    conditions = [
+        pbp_offense.loc[is_pass, "air_yards"].isna(),
+        pbp_offense.loc[is_pass, "air_yards"] <= 0,
+        (pbp_offense.loc[is_pass, "air_yards"] > 0) & (pbp_offense.loc[is_pass, "air_yards"] <= 5),
+        (pbp_offense.loc[is_pass, "air_yards"] > 5) & (pbp_offense.loc[is_pass, "air_yards"] <= 15),
+        pbp_offense.loc[is_pass, "air_yards"] > 15,
+    ]
+    choices = ["no_target", "behind_los", "short", "medium", "deep"]
+
+    pbp_offense.loc[is_pass, "pass_depth_bucket"] = np.select(conditions, choices, default="unknown")
+
+
+else:
+    pbp_offense["pass_depth_bucket"] = "unknown"
+
+
+
+
+#####
+###Saving data
+####
+ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 parquet_path = ARTIFACTS_DIR / "pbp_offense_chi_2025.parquet"
 csv_path = ARTIFACTS_DIR / "pbp_offense_chi_2025.csv"
 
-pbp_offense.to_parquet(parquet_path, index=True)
-pbp_offense.to_csv(csv_path, index=True)
+pbp_offense.to_parquet(parquet_path, index=False)
+pbp_offense.to_csv(csv_path, index=False)
+
+
+
+
+
+
 
 print("Saved parquet to:", parquet_path.resolve())
 print("Saved csv to:", csv_path.resolve())
