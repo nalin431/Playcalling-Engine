@@ -52,5 +52,12 @@ dftrain = dftrain.dropna()
 
 
 ##Classifcation model training: scikit-learn logistic regression
+##Trained on success of plays
+
+
+
+
+##Linear regression model training: scikit-learn linear regression
+##Trained on yards gained of plays
 
 
