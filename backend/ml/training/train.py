@@ -2,12 +2,12 @@ from pathlib import Path
 import pandas as pd
 
 ##ML libraries
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score, mean_absolute_error, mean_squared_error
 from xgboost import XGBClassifier
 import joblib
 
@@ -53,6 +53,7 @@ dftrain = dftrain.dropna(subset=TARGET_COLUMNS)
 # Split features/targets.
 X = dftrain[FEATURE_COLUMNS]
 y_success = dftrain["success"]
+y_yards = dftrain["yards_gained"]
 
 # Split by unique game_id to avoid leakage.
 game_ids = dftrain["game_id"].unique()
@@ -62,10 +63,13 @@ train_mask = dftrain["game_id"].isin(train_games)
 val_mask = dftrain["game_id"].isin(validate_games)
 
 X_train = X[train_mask]
-y_train = y_success[train_mask]
+y_train_success = y_success[train_mask]
+y_train_yards = y_yards[train_mask]
+
 
 X_val = X[val_mask]
-y_val = y_success[val_mask]
+y_val_success = y_success[val_mask]
+y_val_yards = y_yards[val_mask]
 
 
 # Identify categorical vs numeric columns.
@@ -80,9 +84,10 @@ preprocessor = ColumnTransformer(
     ],
     remainder="drop",
 )
-
+######
 ##Classifcation model training: scikit-learn logistic regression
 ##Trained on success of plays
+######
 clf = LogisticRegression(max_iter=10000, class_weight="balanced")
 
 
@@ -92,21 +97,47 @@ clf_pipeline = Pipeline(
         ("model", clf),
     ]
 )
-clf_pipeline.fit(X_train, y_train)
+clf_pipeline.fit(X_train, y_train_success)
 
 val_probs = clf_pipeline.predict_proba(X_val)[:, 1]
 val_preds = (val_probs >= 0.5).astype(int)
 
-val_acc = accuracy_score(y_val, val_preds)
-val_auc = roc_auc_score(y_val, val_probs)
-print(f"Validation accuracy: {val_acc:.3f}")
-print(f"Validation AUC: {val_auc:.3f}")
+val_acc = accuracy_score(y_val_success, val_preds)
+val_auc = roc_auc_score(y_val_success, val_probs)
+print(f"Validation accuracy for classification: {val_acc:.3f}")
+print(f"Validation AUC for classification: {val_auc:.3f}")
 
-#Saving to artifcats
+#Saving Classifcation to artifcats
 ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_pipeline.pkl")
 
+
+
+########
 ##Linear regression model training: scikit-learn linear regression
 ##Trained on yards gained of plays
+###### 
+linregr = LinearRegression()
+
+yards_gained_pipeline = Pipeline( 
+    steps = [
+         ("preprocess", preprocessor),
+        ("model", linregr),
+    ]
+)
+
+yards_gained_pipeline.fit(X_train, y_train_yards)
+
+val_yards_preds = yards_gained_pipeline.predict(X_val)
+val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
+val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
+print(f"Validation MAE for yards: {val_mae:.3f}")
+print(f"Validation RMSE for yards: {val_rmse:.3f}")
+
+
+ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+ARTIFACTS_DIR.mkdir(exist_ok=True)
+
+joblib.dump(yards_gained_pipeline, ARTIFACTS_DIR / "yards_gained_pipeline.pkl")
