@@ -8,6 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
+from xgboost import XGBClassifier
 import joblib
 
 # Feature set for training (kept here for reproducible experiments).
@@ -16,7 +17,6 @@ FEATURE_COLUMNS = [
     "ydstogo",
     "yardline_100",
     "goal_to_go",
-    "qtr",
     "game_seconds_remaining",
     "half_seconds_remaining",
     "score_differential",
@@ -27,16 +27,11 @@ FEATURE_COLUMNS = [
     "posteam",
     "defteam",
     "posteam_type",
-    "roof",
-    "surface",
-    "weather",
     "play_type",
     "run_location",
     "run_gap",
     "pass_location",
     "pass_depth_bucket",
-    "season",
-    "week",
 ]
 
 TARGET_COLUMNS = ["success", "yards_gained"]
@@ -86,16 +81,20 @@ preprocessor = ColumnTransformer(
     remainder="drop",
 )
 
-# Fit preprocessing on train, apply to validation.
-X_train_processed = preprocessor.fit_transform(X_train)
-X_val_processed = preprocessor.transform(X_val)
-
 ##Classifcation model training: scikit-learn logistic regression
 ##Trained on success of plays
-clf = LogisticRegression(max_iter=1000, class_weight="balanced")
-clf.fit(X_train_processed, y_train)
+clf = LogisticRegression(max_iter=10000, class_weight="balanced")
 
-val_probs = clf.predict_proba(X_val_processed)[:, 1]
+
+clf_pipeline = Pipeline(
+    steps=[
+        ("preprocess", preprocessor),
+        ("model", clf),
+    ]
+)
+clf_pipeline.fit(X_train, y_train)
+
+val_probs = clf_pipeline.predict_proba(X_val)[:, 1]
 val_preds = (val_probs >= 0.5).astype(int)
 
 val_acc = accuracy_score(y_val, val_preds)
@@ -107,7 +106,7 @@ print(f"Validation AUC: {val_auc:.3f}")
 ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
-joblib.dump(clf, ARTIFACTS_DIR / "success_classifier.pkl")
+joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_pipeline.pkl")
 
 ##Linear regression model training: scikit-learn linear regression
 ##Trained on yards gained of plays
