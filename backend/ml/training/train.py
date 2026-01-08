@@ -48,7 +48,12 @@ DATA_PATH = Path(__file__).resolve().parents[1] / "artifacts" / "pbp_offense_chi
 dfraw = pd.read_parquet(DATA_PATH)
 
 dftrain = dfraw[FEATURE_COLUMNS + TARGET_COLUMNS + ["game_id"]]
-dftrain = dftrain.dropna()
+
+for col in FEATURE_COLUMNS:
+    if dftrain[col].dtype == "object":
+        dftrain[col] = dftrain[col].fillna("unknown")
+
+dftrain = dftrain.dropna(subset=TARGET_COLUMNS)
 
 # Split features/targets.
 X = dftrain[FEATURE_COLUMNS]
@@ -87,7 +92,7 @@ X_val_processed = preprocessor.transform(X_val)
 
 ##Classifcation model training: scikit-learn logistic regression
 ##Trained on success of plays
-clf = LogisticRegression(max_iter=1000)
+clf = LogisticRegression(max_iter=1000, class_weight="balanced")
 clf.fit(X_train_processed, y_train)
 
 val_probs = clf.predict_proba(X_val_processed)[:, 1]
