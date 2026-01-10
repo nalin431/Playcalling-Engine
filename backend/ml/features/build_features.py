@@ -51,7 +51,20 @@ if 'air_yards' in pbp_offense.columns:
 else:
     pbp_offense["pass_depth_bucket"] = "unknown"
 
+#####
+###Interaction Terms
+# Interaction term to capture down-and-distance context.
+######
+pbp_offense["down_ydstogo"] = pbp_offense["down"] * pbp_offense["ydstogo"]
 
+
+
+
+
+
+
+
+##Might have to look at taking out Caleb's rushing since there have been no designed QB runs
 
 
 #####

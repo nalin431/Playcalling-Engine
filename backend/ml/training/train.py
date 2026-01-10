@@ -8,7 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score, mean_absolute_error, mean_squared_error
-from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
 from sklearn.base import clone
 import joblib
 
@@ -114,9 +114,29 @@ val_auc = roc_auc_score(y_val_success, val_probs)
 print(f"Validation accuracy for classification: {val_acc:.3f}")
 print(f"Validation AUC for classification: {val_auc:.3f}")
 
+#######################33
+cat_features = [X_train.columns.get_loc(col) for col in categorical_cols]
+
+cb_clf = CatBoostClassifier(
+    iterations=500,
+    depth=6,
+    learning_rate=0.05,
+    loss_function="Logloss",
+    eval_metric="AUC",
+    verbose=False,
+    random_state=0,
+)
+cb_clf.fit(X_train, y_train_success, cat_features=cat_features)
+val_probs = cb_clf.predict_proba(X_val)[:, 1]
+
+val_auc = roc_auc_score(y_val_success, val_probs)
+print(f"Validation AUC for classification with CatBoost: {val_auc:.3f}")
+###############################
+
 #Saving Classifcation to artifcats
 
-joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_pipeline.pkl")
+joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_logisticregression_pipeline.pkl")
+joblib.dump(cb_clf, ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl")
 
 
 
