@@ -118,7 +118,7 @@ print(f"Validation AUC for classification: {val_auc:.3f}")
 cat_features = [X_train.columns.get_loc(col) for col in categorical_cols]
 
 cb_clf = CatBoostClassifier(
-    iterations=500,
+    iterations=1000,
     depth=6,
     learning_rate=0.05,
     loss_function="Logloss",
