@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score, mean_absolute_error, mean_squared_error
 from xgboost import XGBClassifier
+from sklearn.base import clone
 import joblib
 
 # Feature set for training (kept here for reproducible experiments).
@@ -84,6 +85,12 @@ preprocessor = ColumnTransformer(
     ],
     remainder="drop",
 )
+
+
+ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
+ARTIFACTS_DIR.mkdir(exist_ok=True)
+
+
 ######
 ##Classifcation model training: scikit-learn logistic regression
 ##Trained on success of plays
@@ -93,7 +100,7 @@ clf = LogisticRegression(max_iter=10000, class_weight="balanced")
 
 clf_pipeline = Pipeline(
     steps=[
-        ("preprocess", preprocessor),
+        ("preprocess", clone(preprocessor)),
         ("model", clf),
     ]
 )
@@ -108,8 +115,6 @@ print(f"Validation accuracy for classification: {val_acc:.3f}")
 print(f"Validation AUC for classification: {val_auc:.3f}")
 
 #Saving Classifcation to artifcats
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
-ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_pipeline.pkl")
 
@@ -123,7 +128,7 @@ linregr = LinearRegression()
 
 yards_gained_pipeline = Pipeline( 
     steps = [
-         ("preprocess", preprocessor),
+         ("preprocess", clone(preprocessor)),
         ("model", linregr),
     ]
 )
@@ -137,7 +142,6 @@ print(f"Validation MAE for yards: {val_mae:.3f}")
 print(f"Validation RMSE for yards: {val_rmse:.3f}")
 
 
-ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts"
-ARTIFACTS_DIR.mkdir(exist_ok=True)
+
 
 joblib.dump(yards_gained_pipeline, ARTIFACTS_DIR / "yards_gained_pipeline.pkl")
