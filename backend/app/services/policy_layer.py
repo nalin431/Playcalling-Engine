@@ -23,8 +23,8 @@ def _context_weights(situation: GameSituation) -> Dict[str, float]:
     yards_weight = 0.35
 
     if situation.down >= 3:
-        success_weight = 0.8
-        yards_weight = 0.2
+        success_weight = 0.9
+        yards_weight = 0.1
 
     if situation.yardline_100 <= 20:
         success_weight = 0.8
@@ -47,8 +47,6 @@ def _estimate_risk_level(candidate: Dict[str, Any]) -> str:
 
     if play_type == "pass" and depth == "deep":
         return "high"
-    if play_type in {"trick", "play-action"}:
-        return "medium"
     if play_type == "run":
         return "low"
     return "medium"
@@ -56,7 +54,7 @@ def _estimate_risk_level(candidate: Dict[str, Any]) -> str:
 
 def _risk_penalty(level: str) -> float:
     if level == "high":
-        return 0.10
+        return 0.20
     if level == "medium":
         return 0.05
     return 0.0

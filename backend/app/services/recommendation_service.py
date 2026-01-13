@@ -126,9 +126,9 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
 
 
 sample = {
-    "down": 3,
-    "distance": 6,
-    "fieldPosition": 35,
+    "down": 1,
+    "distance": 10,
+    "fieldPosition": 15,
     "quarter": 3,
     "timeRemaining": "08:45",
     "scoreDifference": -3,
