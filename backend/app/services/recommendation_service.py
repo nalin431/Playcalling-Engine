@@ -3,10 +3,11 @@ from __future__ import annotations
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List
+import pandas as pd
 
 import joblib
 
-import policy_layer
+from policy_layer import GameSituation, recommend_best_play
 
 ARTIFACTS_DIR = Path(__file__).resolve().parents[2] / "ml" / "artifacts"
 SUCCESS_MODEL_PATH = ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl"
@@ -38,11 +39,14 @@ def _base_features(situation: Dict[str, Any]) -> Dict[str, Any]:
         "game_seconds_remaining": time_remaining_seconds + (4 - situation.get("quarter", 1)) * 900,
         "half_seconds_remaining": time_remaining_seconds + (2 - ((situation.get("quarter", 1) - 1) % 2 + 1)) * 900,
         "score_differential": situation.get("scoreDifference"),
+        "posteam_timeouts_remaining": situation.get("posteam_timeouts_remaining", 3),
+        "defteam_timeouts_remaining": situation.get("defteam_timeouts_remaining", 3),
+         "shotgun": 0,
+        "no_huddle": 0,
         "posteam": "CHI",
         "defteam": situation.get("opponent"),
         "posteam_type": "home",
-        "shotgun": 0,
-        "no_huddle": 0,
+     
     }
 
 
@@ -90,8 +94,9 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
 
     scored_candidates: List[Dict[str, Any]] = []
     for candidate in candidates:
-        success_prob = float(success_model.predict_proba([candidate])[0][1])
-        expected_yards = float(yards_model.predict([candidate])[0])
+        X = pd.DataFrame([candidate])
+        success_prob = float(success_model.predict_proba(X)[0][1])
+        expected_yards = float(yards_model.predict(X)[0])
 
         scored_candidates.append(
             {
@@ -121,7 +126,7 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
 
 
 sample = {
-    "down": 2,
+    "down": 3,
     "distance": 6,
     "fieldPosition": 35,
     "quarter": 3,

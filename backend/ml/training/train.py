@@ -118,15 +118,19 @@ print(f"Validation AUC for classification: {val_auc:.3f}")
 cat_features = [X_train.columns.get_loc(col) for col in categorical_cols]
 
 cb_clf = CatBoostClassifier(
-    iterations=1000,
+    iterations=5000,
     depth=6,
     learning_rate=0.05,
     loss_function="Logloss",
     eval_metric="AUC",
-    verbose=False,
+    verbose=200,
     random_state=0,
 )
-cb_clf.fit(X_train, y_train_success, cat_features=cat_features)
+cb_clf.fit(X_train, y_train_success,
+    cat_features=cat_features,
+    eval_set=(X_val, y_val_success),
+    use_best_model=True,
+    early_stopping_rounds=200,)
 val_probs = cb_clf.predict_proba(X_val)[:, 1]
 
 val_auc = roc_auc_score(y_val_success, val_probs)
