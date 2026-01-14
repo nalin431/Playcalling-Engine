@@ -19,6 +19,18 @@ export interface Play {
   usageCount: number;
 }
 
+export interface RecommendationPlay {
+  type: 'run' | 'pass';
+  run_location?: string;
+  run_gap?: string;
+  run_player?: string;
+  pass_location?: string;
+  pass_depth_bucket?: string;
+  success_prob?: number;
+  expected_yards?: number;
+  score?: number;
+}
+
 export interface PlayPrediction {
   predictedPlay: Play;
   confidence: number;
@@ -39,11 +51,11 @@ export interface OpponentBreakdown {
 }
 
 export interface BestPlayRecommendation {
-  recommendedPlay: Play;
+  recommendedPlay: RecommendationPlay;
   reasoning: string[];
   successProbability: number;
   expectedYards: number;
   riskLevel: 'low' | 'medium' | 'high';
-  alternativePlays: Play[];
+  alternativePlays: RecommendationPlay[];
 }
 

@@ -1,4 +1,4 @@
-import type { BestPlayRecommendation as BestPlayRecommendationType } from '../types';
+import type { BestPlayRecommendation as BestPlayRecommendationType, RecommendationPlay } from '../types';
 import './BestPlayRecommendation.css';
 
 interface BestPlayRecommendationProps {
@@ -28,6 +28,19 @@ export default function BestPlayRecommendation({ recommendation }: BestPlayRecom
     }
   };
 
+  const formatPlay = (play: RecommendationPlay) => {
+    if (play.type === 'run') {
+      const location = play.run_location ? play.run_location.toUpperCase() : 'UNKNOWN';
+      const gap = play.run_gap ? play.run_gap.toUpperCase() : 'UNKNOWN';
+      const player = play.run_player ? ` • ${play.run_player}` : '';
+      return `RUN • ${location} ${gap}${player}`;
+    }
+
+    const depth = play.pass_depth_bucket ? play.pass_depth_bucket.toUpperCase() : 'UNKNOWN';
+    const location = play.pass_location ? play.pass_location.toUpperCase() : 'UNKNOWN';
+    return `PASS • ${depth} ${location}`;
+  };
+
   return (
     <div className="best-play-recommendation">
       <h2>Best Play Recommendation</h2>
@@ -49,8 +62,8 @@ export default function BestPlayRecommendation({ recommendation }: BestPlayRecom
         </div>
 
         <div className="recommended-play">
-          <h3>{recommendation.recommendedPlay.description}</h3>
-          <p className="formation">Formation: {recommendation.recommendedPlay.formation}</p>
+          <h3>{formatPlay(recommendation.recommendedPlay)}</h3>
+          <p className="formation">Play Type: {recommendation.recommendedPlay.type.toUpperCase()}</p>
           
           <div className="play-metrics">
             <div className="metric">
@@ -59,11 +72,19 @@ export default function BestPlayRecommendation({ recommendation }: BestPlayRecom
             </div>
             <div className="metric">
               <span className="metric-label">Success Rate</span>
-              <span className="metric-value">{recommendation.recommendedPlay.successRate}%</span>
+              <span className="metric-value">
+                {recommendation.recommendedPlay.success_prob
+                  ? `${(recommendation.recommendedPlay.success_prob * 100).toFixed(1)}%`
+                  : 'N/A'}
+              </span>
             </div>
             <div className="metric">
-              <span className="metric-label">Avg Yards/Play</span>
-              <span className="metric-value">{recommendation.recommendedPlay.yardsPerPlay.toFixed(1)}</span>
+              <span className="metric-label">Model Score</span>
+              <span className="metric-value">
+                {recommendation.recommendedPlay.score !== undefined
+                  ? recommendation.recommendedPlay.score.toFixed(2)
+                  : 'N/A'}
+              </span>
             </div>
           </div>
         </div>
@@ -83,11 +104,19 @@ export default function BestPlayRecommendation({ recommendation }: BestPlayRecom
             <div className="alternatives-grid">
               {recommendation.alternativePlays.map((play, index) => (
                 <div key={index} className="alternative-play">
-                  <span className="alt-play-type">{play.type}</span>
-                  <p className="alt-play-desc">{play.description}</p>
+                  <span className="alt-play-type">{play.type.toUpperCase()}</span>
+                  <p className="alt-play-desc">{formatPlay(play)}</p>
                   <div className="alt-play-stats">
-                    <span>{play.successRate}% success</span>
-                    <span>{play.yardsPerPlay.toFixed(1)} avg yds</span>
+                    <span>
+                      {play.success_prob !== undefined
+                        ? `${(play.success_prob * 100).toFixed(1)}% success`
+                        : 'Success N/A'}
+                    </span>
+                    <span>
+                      {play.expected_yards !== undefined
+                        ? `${play.expected_yards.toFixed(1)} avg yds`
+                        : 'Yards N/A'}
+                    </span>
                   </div>
                 </div>
               ))}
