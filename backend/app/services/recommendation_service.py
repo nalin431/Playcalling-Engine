@@ -55,21 +55,24 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     run_locations = ["left", "middle", "right"]
     run_gaps = ["guard", "tackle"]
+    run_players = ["D.Swift", "K.Monangai"]
     pass_locations = ["left", "middle", "right"]
     pass_depths = ["short", "medium", "deep"]
 
     for location in run_locations:
         for gap in run_gaps:
-            candidates.append(
-                {
-                    **base,
-                    "play_type": "run",
-                    "run_location": location,
-                    "run_gap": gap,
-                    "pass_location": "unknown",
-                    "pass_depth_bucket": "not_pass",
-                }
-            )
+            for player in run_players:
+                candidates.append(
+                    {
+                        **base,
+                        "play_type": "run",
+                        "run_location": location,
+                        "run_gap": gap,
+                        "run_player": player,
+                        "pass_location": "unknown",
+                        "pass_depth_bucket": "not_pass",
+                    }
+                )
 
     for location in pass_locations:
         for depth in pass_depths:
@@ -79,6 +82,7 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "play_type": "pass",
                     "run_location": "unknown",
                     "run_gap": "unknown",
+                    "run_player": "not_run",
                     "pass_location": location,
                     "pass_depth_bucket": depth,
                 }
@@ -103,6 +107,7 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
                 "type": candidate["play_type"],
                 "run_location": candidate.get("run_location"),
                 "run_gap": candidate.get("run_gap"),
+                "run_player": candidate.get("run_player"),
                 "pass_location": candidate.get("pass_location"),
                 "pass_depth_bucket": candidate.get("pass_depth_bucket"),
                 "success_prob": success_prob,

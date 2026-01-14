@@ -31,6 +31,7 @@ FEATURE_COLUMNS = [
     "play_type",
     "run_location",
     "run_gap",
+    "run_player",
     "pass_location",
     "pass_depth_bucket",
 ]

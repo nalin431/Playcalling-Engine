@@ -30,6 +30,16 @@ pbp_offense['success'] = np.select(success_conditions, [1, 1, 1], default=0)
 
 
 
+
+###Adding in Rusher
+pbp_offense["run_player"] = np.where(
+    pbp_offense["play_type"] == "run",
+    pbp_offense["rusher_player_name"],  
+    "not_run"
+)
+
+
+
 # pass_depth_bucket
 if 'air_yards' in pbp_offense.columns:
     pbp_offense["pass_depth_bucket"] = "not_pass"  
@@ -46,8 +56,6 @@ if 'air_yards' in pbp_offense.columns:
     choices = ["no_target", "behind_los", "short", "medium", "deep"]
 
     pbp_offense.loc[is_pass, "pass_depth_bucket"] = np.select(conditions, choices, default="unknown")
-
-
 else:
     pbp_offense["pass_depth_bucket"] = "unknown"
 
@@ -91,4 +99,5 @@ print("Saved csv to:", csv_path.resolve())
 print(pbp_offense.head())
 print(pbp_offense.shape)
 print(pbp_offense["game_id"].nunique())
-print(type(pbp_offense))
+
+print(np.unique(pbp_offense["run_player"]))
