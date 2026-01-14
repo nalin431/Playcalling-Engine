@@ -7,7 +7,7 @@ import pandas as pd
 
 import joblib
 
-from policy_layer import GameSituation, recommend_best_play
+from .policy_layer import GameSituation, recommend_best_play
 
 ARTIFACTS_DIR = Path(__file__).resolve().parents[2] / "ml" / "artifacts"
 SUCCESS_MODEL_PATH = ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl"
@@ -129,16 +129,17 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
     return recommend_best_play(policy_situation, scored_candidates)
 
 
+if __name__ == "__main__":
+    sample = {
+        "down": 3,
+        "distance": 1,
+        "fieldPosition": 63,
+        "quarter": 3,
+        "timeRemaining": "08:09",
+        "scoreDifference": 0,
+        "opponent": "GB",
+    }
 
-sample = {
-    "down": 1,
-    "distance": 10,
-    "fieldPosition": 15,
-    "quarter": 3,
-    "timeRemaining": "08:45",
-    "scoreDifference": -3,
-    "opponent": "GB",
-}
+    test = recommend_play(sample)
+    print(test)
 
-test = recommend_play(sample)
-print(test)

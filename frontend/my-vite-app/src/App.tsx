@@ -2,8 +2,9 @@ import { useState } from 'react';
 import GameSituationForm from './components/GameSituationForm';
 import OpponentBreakdown from './components/OpponentBreakdown';
 import BestPlayRecommendation from './components/BestPlayRecommendation';
-import type { GameSituation, PlayPrediction as PlayPredictionType, OpponentBreakdown as OpponentBreakdownType, BestPlayRecommendation as BestPlayRecommendationType } from './types';
-import { getOpponentBreakdown, getBestPlayRecommendation } from './services/mockDataService';
+import type { GameSituation, OpponentBreakdown as OpponentBreakdownType, BestPlayRecommendation as BestPlayRecommendationType } from './types';
+import { getBestPlayRecommendation } from './services/apiService';
+import { getOpponentBreakdown } from './services/mockDataService';
 import './App.css';
 
 function App() {
@@ -11,12 +12,12 @@ function App() {
   const [opponentBreakdown, setOpponentBreakdown] = useState<OpponentBreakdownType | null>(null);
   const [bestPlayRecommendation, setBestPlayRecommendation] = useState<BestPlayRecommendationType | null>(null);
 
-  const handleSituationSubmit = (situation: GameSituation) => {
+  const handleSituationSubmit = async (situation: GameSituation) => {
     setGameSituation(situation);
     
     // Generate predictions and recommendations
     const breakdown = getOpponentBreakdown(situation.opponent);
-    const recommendation = getBestPlayRecommendation(situation);
+    const recommendation = await getBestPlayRecommendation(situation);
     
     
     setOpponentBreakdown(breakdown);
