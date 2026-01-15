@@ -54,7 +54,7 @@ def _estimate_risk_level(candidate: Dict[str, Any]) -> str:
 
 def _risk_penalty(level: str) -> float:
     if level == "high":
-        return 0.20
+        return 0.15
     if level == "medium":
         return 0.05
     return 0.0
@@ -69,7 +69,7 @@ def score_candidate(situation: GameSituation, candidate: Dict[str, Any]) -> floa
     risk_penalty = _risk_penalty(risk_level)
 
     score = (weights["success_weight"] * success_prob) + (weights["yards_weight"] * (expected_yards / 10.0))
-    score -= risk_penalty
+    #score -= risk_penalty
     return score
 
 

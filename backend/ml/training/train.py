@@ -8,7 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score, mean_absolute_error, mean_squared_error
-from catboost import CatBoostClassifier
+from catboost import CatBoostClassifier, CatBoostRegressor
 from sklearn.base import clone
 import joblib
 
@@ -151,22 +151,52 @@ joblib.dump(cb_clf, ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl")
 ###### 
 linregr = LinearRegression()
 
-yards_gained_pipeline = Pipeline( 
-    steps = [
-         ("preprocess", clone(preprocessor)),
-        ("model", linregr),
-    ]
+# yards_gained_pipeline = Pipeline( 
+#     steps = [
+#          ("preprocess", clone(preprocessor)),
+#         ("model", linregr),
+#     ]
+# )
+
+# yards_gained_pipeline.fit(X_train, y_train_yards)
+
+# val_yards_preds = yards_gained_pipeline.predict(X_val)
+# val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
+# val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
+# print(f"Validation MAE for yards: {val_mae:.3f}")
+# print(f"Validation RMSE for yards: {val_rmse:.3f}")
+
+
+
+###New CatboostRegressor Model Implementation
+cb_reg = CatBoostRegressor(
+    iterations=5000,
+    depth=6,
+    learning_rate=0.05,
+    loss_function="RMSE",
+    eval_metric="RMSE",
+    verbose=200,
+    random_state=0,
 )
 
-yards_gained_pipeline.fit(X_train, y_train_yards)
+cb_reg.fit(
+    X_train,
+    y_train_yards,
+    cat_features=cat_features,
+    eval_set=(X_val, y_val_yards),
+    use_best_model=True,
+    early_stopping_rounds=200,
+)
 
-val_yards_preds = yards_gained_pipeline.predict(X_val)
+val_yards_preds = cb_reg.predict(X_val)
 val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
 val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
-print(f"Validation MAE for yards: {val_mae:.3f}")
-print(f"Validation RMSE for yards: {val_rmse:.3f}")
+print(f"Validation MAE for yards (CatBoost): {val_mae:.3f}")
+print(f"Validation RMSE for yards (CatBoost): {val_rmse:.3f}")
 
 
 
 
-joblib.dump(yards_gained_pipeline, ARTIFACTS_DIR / "yards_gained_pipeline.pkl")
+
+
+joblib.dump(cb_reg, ARTIFACTS_DIR / "yards_gained_pipeline.pkl")
