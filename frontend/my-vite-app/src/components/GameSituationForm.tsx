@@ -11,8 +11,8 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
   const [situation, setSituation] = useState<GameSituation>(
     initialSituation || {
       down: 1,
-      //distance: 10,
-      yardage: 10,
+      distance: 10,
+      //yardage: 10,
       fieldPosition: 25,
       quarter: 1,
       timeRemaining: '15:00',
@@ -44,8 +44,8 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
           </select>
         </div>
 
-        {/* <div className="form-group">
-          <label htmlFor="distance">Distance (yards)</label>
+        <div className="form-group">
+          <label htmlFor="distance">Yards to First Down</label>
           <input
             id="distance"
             type="number"
@@ -54,22 +54,10 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
             value={situation.distance}
             onChange={(e) => setSituation({ ...situation, distance: parseInt(e.target.value) || 0 })}
           />
-        </div> */}
-
-        <div className="form-group">
-          <label htmlFor="yardage">Yards to Go</label>
-          <input
-            id="yardage"
-            type="number"
-            min="1"
-            max="99"
-            value={situation.yardage}
-            onChange={(e) => setSituation({ ...situation, yardage: parseInt(e.target.value) || 0 })}
-          />
         </div>
 
         <div className="form-group">
-          <label htmlFor="fieldPosition">Field Position (yards from goal)</label>
+          <label htmlFor="fieldPosition">Yards from Goal</label>
           <input
             id="fieldPosition"
             type="number"
@@ -108,7 +96,7 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
         </div>
 
         <div className="form-group">
-          <label htmlFor="scoreDifference">Score Difference (Bears - Opponent)</label>
+          <label htmlFor="scoreDifference">Score Diff (Bears - Opponent)</label>
           <input
             id="scoreDifference"
             type="number"

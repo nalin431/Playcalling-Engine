@@ -3,14 +3,17 @@ import './BestPlayRecommendation.css';
 
 interface BestPlayRecommendationProps {
   recommendation: BestPlayRecommendationType | null;
+  isLoading?: boolean;
 }
 
-export default function BestPlayRecommendation({ recommendation }: BestPlayRecommendationProps) {
+export default function BestPlayRecommendation({ recommendation, isLoading = false }: BestPlayRecommendationProps) {
   if (!recommendation) {
     return (
       <div className="best-play-recommendation">
         <h2>Best Play Recommendation</h2>
-        <p className="empty-state">Enter game situation to get play recommendation</p>
+        <p className="empty-state">
+          {isLoading ? 'Loading play recommendation...' : 'Enter game situation to get play recommendation'}
+        </p>
       </div>
     );
   }

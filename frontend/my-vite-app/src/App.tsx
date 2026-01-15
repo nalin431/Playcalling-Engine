@@ -11,17 +11,21 @@ function App() {
   const [gameSituation, setGameSituation] = useState<GameSituation | null>(null);
   const [opponentBreakdown, setOpponentBreakdown] = useState<OpponentBreakdownType | null>(null);
   const [bestPlayRecommendation, setBestPlayRecommendation] = useState<BestPlayRecommendationType | null>(null);
+  const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
 
   const handleSituationSubmit = async (situation: GameSituation) => {
     setGameSituation(situation);
+    setIsLoadingRecommendation(true);
     
     // Generate predictions and recommendations
     const breakdown = getOpponentBreakdown(situation.opponent);
+    console.log("Submitting situation:", situation);
     const recommendation = await getBestPlayRecommendation(situation);
     
     
     setOpponentBreakdown(breakdown);
     setBestPlayRecommendation(recommendation);
+    setIsLoadingRecommendation(false);
   };
 
   return (
@@ -39,7 +43,10 @@ function App() {
           
           <div className="results-grid">
             <div className="results-column">
-              <BestPlayRecommendation recommendation={bestPlayRecommendation} />
+              <BestPlayRecommendation
+                recommendation={bestPlayRecommendation}
+                isLoading={isLoadingRecommendation}
+              />
             </div>
             
             <div className="results-column">
