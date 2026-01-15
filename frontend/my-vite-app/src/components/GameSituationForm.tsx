@@ -11,7 +11,7 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
   const [situation, setSituation] = useState<GameSituation>(
     initialSituation || {
       down: 1,
-      distance: 10,
+      //distance: 10,
       yardage: 10,
       fieldPosition: 25,
       quarter: 1,
@@ -44,7 +44,7 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
           </select>
         </div>
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label htmlFor="distance">Distance (yards)</label>
           <input
             id="distance"
@@ -54,7 +54,7 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
             value={situation.distance}
             onChange={(e) => setSituation({ ...situation, distance: parseInt(e.target.value) || 0 })}
           />
-        </div>
+        </div> */}
 
         <div className="form-group">
           <label htmlFor="yardage">Yards to Go</label>

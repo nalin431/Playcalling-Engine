@@ -126,13 +126,13 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
 
   // Determine play type based on down and distance
   if (situation.down === 1) {
-    predictedPlay = situation.distance >= 8 ? mockPlays[2] : mockPlays[0]; // Pass on long 1st, run on short
+    predictedPlay = situation.yardage >= 8 ? mockPlays[2] : mockPlays[0]; // Pass on long 1st, run on short
     factors.push('First down - balanced approach');
   } else if (situation.down === 2) {
-    if (situation.distance <= 3) {
+    if (situation.yardage <= 3) {
       predictedPlay = mockPlays[0]; // Run for short yardage
       factors.push('Short yardage situation');
-    } else if (situation.distance >= 8) {
+    } else if (situation.yardage >= 8) {
       predictedPlay = mockPlays[3]; // Deep pass
       factors.push('Long yardage - need big play');
     } else {
@@ -140,7 +140,7 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
       factors.push('Medium distance - high percentage play');
     }
   } else if (situation.down === 3) {
-    if (situation.distance <= 3) {
+    if (situation.yardage <= 3) {
       predictedPlay = mockPlays[0]; // Power run
       factors.push('Short yardage conversion attempt');
     } else {
@@ -149,7 +149,7 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
     }
   } else {
     // 4th down
-    predictedPlay = situation.distance <= 2 ? mockPlays[0] : mockPlays[2];
+    predictedPlay = situation.yardage <= 2 ? mockPlays[0] : mockPlays[2];
     factors.push('Fourth down - critical play');
   }
 
@@ -195,119 +195,119 @@ export function getOpponentBreakdown(opponent: string): OpponentBreakdown {
   } as OpponentBreakdown;
 }
 
-export function getBestPlayRecommendation(situation: GameSituation): BestPlayRecommendation {
-  const opponentBreakdown = getOpponentBreakdown(situation.opponent);
-  const reasoning: string[] = [];
-  let recommendedPlay: Play;
-  let riskLevel: 'low' | 'medium' | 'high' = 'medium';
+// export function getBestPlayRecommendation(situation: GameSituation): BestPlayRecommendation {
+//   const opponentBreakdown = getOpponentBreakdown(situation.opponent);
+//   const reasoning: string[] = [];
+//   let recommendedPlay: Play;
+//   let riskLevel: 'low' | 'medium' | 'high' = 'medium';
 
-  // Analyze situation and opponent
-  if (situation.down === 1 && situation.distance === 10) {
-    // First and 10 - balanced approach
-    if (opponentBreakdown.defensiveTendencies.runDefense < 65) {
-      recommendedPlay = mockPlays[1]; // Zone read
-      reasoning.push('Opponent has weak run defense');
-      reasoning.push('Zone read has high success rate (72%)');
-      riskLevel = 'low';
-    } else {
-      recommendedPlay = mockPlays[2]; // Quick slant
-      reasoning.push('Opponent has strong run defense');
-      reasoning.push('Quick pass exploits coverage weaknesses');
-      riskLevel = 'low';
-    }
-  } else if (situation.down === 2) {
-    if (situation.distance <= 3) {
-      recommendedPlay = mockPlays[0]; // Power run
-      reasoning.push('Short yardage - power run is most reliable');
-      reasoning.push('68% success rate in similar situations');
-      riskLevel = 'low';
-    } else if (situation.distance >= 8) {
-      recommendedPlay = mockPlays[5]; // Screen pass
-      reasoning.push('Long yardage - screen pass can catch defense off guard');
-      reasoning.push('Effective against aggressive defenses');
-      riskLevel = 'medium';
-    } else {
-      recommendedPlay = mockPlays[2]; // Quick slant
-      reasoning.push('Medium distance - high percentage play');
-      reasoning.push('75% success rate this season');
-      riskLevel = 'low';
-    }
-  } else if (situation.down === 3) {
-    if (situation.distance <= 3) {
-      recommendedPlay = mockPlays[0]; // Power run
-      reasoning.push('Short yardage conversion');
-      reasoning.push('Most successful play in short yardage situations');
-      riskLevel = 'low';
-    } else if (situation.distance <= 7) {
-      recommendedPlay = mockPlays[2]; // Quick slant
-      reasoning.push('Medium distance - need conversion');
-      reasoning.push('High success rate (75%)');
-      riskLevel = 'low';
-    } else {
-      recommendedPlay = mockPlays[3]; // Deep post
-      reasoning.push('Long yardage - need big play');
-      reasoning.push('High yards per play (12.3 avg)');
-      riskLevel = 'high';
-    }
-  } else {
-    // 4th down
-    if (situation.distance <= 2) {
-      recommendedPlay = mockPlays[0]; // Power run
-      reasoning.push('Short yardage - go for it');
-      reasoning.push('Highest success rate for short conversions');
-      riskLevel = 'medium';
-    } else {
-      recommendedPlay = mockPlays[2]; // Quick slant
-      reasoning.push('Medium distance - quick pass for conversion');
-      reasoning.push('High percentage play');
-      riskLevel = 'high';
-    }
-  }
+//   // Analyze situation and opponent
+//   if (situation.down === 1 && situation.distance === 10) {
+//     // First and 10 - balanced approach
+//     if (opponentBreakdown.defensiveTendencies.runDefense < 65) {
+//       recommendedPlay = mockPlays[1]; // Zone read
+//       reasoning.push('Opponent has weak run defense');
+//       reasoning.push('Zone read has high success rate (72%)');
+//       riskLevel = 'low';
+//     } else {
+//       recommendedPlay = mockPlays[2]; // Quick slant
+//       reasoning.push('Opponent has strong run defense');
+//       reasoning.push('Quick pass exploits coverage weaknesses');
+//       riskLevel = 'low';
+//     }
+//   } else if (situation.down === 2) {
+//     if (situation.distance <= 3) {
+//       recommendedPlay = mockPlays[0]; // Power run
+//       reasoning.push('Short yardage - power run is most reliable');
+//       reasoning.push('68% success rate in similar situations');
+//       riskLevel = 'low';
+//     } else if (situation.distance >= 8) {
+//       recommendedPlay = mockPlays[5]; // Screen pass
+//       reasoning.push('Long yardage - screen pass can catch defense off guard');
+//       reasoning.push('Effective against aggressive defenses');
+//       riskLevel = 'medium';
+//     } else {
+//       recommendedPlay = mockPlays[2]; // Quick slant
+//       reasoning.push('Medium distance - high percentage play');
+//       reasoning.push('75% success rate this season');
+//       riskLevel = 'low';
+//     }
+//   } else if (situation.down === 3) {
+//     if (situation.distance <= 3) {
+//       recommendedPlay = mockPlays[0]; // Power run
+//       reasoning.push('Short yardage conversion');
+//       reasoning.push('Most successful play in short yardage situations');
+//       riskLevel = 'low';
+//     } else if (situation.distance <= 7) {
+//       recommendedPlay = mockPlays[2]; // Quick slant
+//       reasoning.push('Medium distance - need conversion');
+//       reasoning.push('High success rate (75%)');
+//       riskLevel = 'low';
+//     } else {
+//       recommendedPlay = mockPlays[3]; // Deep post
+//       reasoning.push('Long yardage - need big play');
+//       reasoning.push('High yards per play (12.3 avg)');
+//       riskLevel = 'high';
+//     }
+//   } else {
+//     // 4th down
+//     if (situation.distance <= 2) {
+//       recommendedPlay = mockPlays[0]; // Power run
+//       reasoning.push('Short yardage - go for it');
+//       reasoning.push('Highest success rate for short conversions');
+//       riskLevel = 'medium';
+//     } else {
+//       recommendedPlay = mockPlays[2]; // Quick slant
+//       reasoning.push('Medium distance - quick pass for conversion');
+//       reasoning.push('High percentage play');
+//       riskLevel = 'high';
+//     }
+//   }
 
-  // Adjust based on opponent weaknesses
-  if (opponentBreakdown.weaknesses.some((w) => w.toLowerCase().includes('screen'))) {
-    recommendedPlay = mockPlays[5];
-    reasoning.push('Opponent vulnerable to screen passes');
-  }
+//   // Adjust based on opponent weaknesses
+//   if (opponentBreakdown.weaknesses.some((w) => w.toLowerCase().includes('screen'))) {
+//     recommendedPlay = mockPlays[5];
+//     reasoning.push('Opponent vulnerable to screen passes');
+//   }
 
-  if (opponentBreakdown.weaknesses.some((w) => w.toLowerCase().includes('run'))) {
-    if (situation.distance <= 5) {
-      recommendedPlay = mockPlays[1];
-      reasoning.push('Opponent struggles against outside runs');
-    }
-  }
+//   if (opponentBreakdown.weaknesses.some((w) => w.toLowerCase().includes('run'))) {
+//     if (situation.distance <= 5) {
+//       recommendedPlay = mockPlays[1];
+//       reasoning.push('Opponent struggles against outside runs');
+//     }
+//   }
 
-  // Adjust based on game situation
-  if (situation.scoreDifference < -7 && situation.quarter >= 3) {
-    recommendedPlay = mockPlays[3]; // Deep pass
-    reasoning.push('Trailing - need big play');
-    riskLevel = 'high';
-  }
+//   // Adjust based on game situation
+//   if (situation.scoreDifference < -7 && situation.quarter >= 3) {
+//     recommendedPlay = mockPlays[3]; // Deep pass
+//     reasoning.push('Trailing - need big play');
+//     riskLevel = 'high';
+//   }
 
-  if (situation.scoreDifference > 0 && situation.quarter === 4 && situation.distance <= 5) {
-    recommendedPlay = mockPlays[0]; // Run
-    reasoning.push('Leading late - run to burn clock');
-    riskLevel = 'low';
-  }
+//   if (situation.scoreDifference > 0 && situation.quarter === 4 && situation.distance <= 5) {
+//     recommendedPlay = mockPlays[0]; // Run
+//     reasoning.push('Leading late - run to burn clock');
+//     riskLevel = 'low';
+//   }
 
-  // Calculate success probability
-  const baseSuccess = recommendedPlay.successRate;
-  const opponentAdjustment = opponentBreakdown.defensiveTendencies.runDefense < 65 && recommendedPlay.type === 'run' ? 10 : 0;
-  const situationAdjustment = situation.down === 3 || situation.down === 4 ? -5 : 0;
-  const successProbability = Math.min(95, Math.max(40, baseSuccess + opponentAdjustment + situationAdjustment));
+//   // Calculate success probability
+//   const baseSuccess = recommendedPlay.successRate;
+//   const opponentAdjustment = opponentBreakdown.defensiveTendencies.runDefense < 65 && recommendedPlay.type === 'run' ? 10 : 0;
+//   const situationAdjustment = situation.down === 3 || situation.down === 4 ? -5 : 0;
+//   const successProbability = Math.min(95, Math.max(40, baseSuccess + opponentAdjustment + situationAdjustment));
 
-  // Get alternative plays
-  const alternatives = mockPlays
-    .filter((p) => p.id !== recommendedPlay.id && p.type !== recommendedPlay.type)
-    .slice(0, 3);
+//   // Get alternative plays
+//   const alternatives = mockPlays
+//     .filter((p) => p.id !== recommendedPlay.id && p.type !== recommendedPlay.type)
+//     .slice(0, 3);
 
-  return {
-    recommendedPlay,
-    reasoning,
-    successProbability,
-    expectedYards: recommendedPlay.yardsPerPlay,
-    riskLevel,
-    alternativePlays: alternatives,
-  };
-}
+//   return {
+//     recommendedPlay,
+//     reasoning,
+//     successProbability,
+//     expectedYards: recommendedPlay.yardsPerPlay,
+//     riskLevel,
+//     alternativePlays: alternatives,
+//   };
+// }
 

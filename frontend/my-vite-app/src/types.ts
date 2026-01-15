@@ -1,6 +1,6 @@
 export interface GameSituation {
   down: number;
-  distance: number;
+  //distance: number;
   yardage: number; // yards to go
   fieldPosition: number; // yards from own goal line
   quarter: number;

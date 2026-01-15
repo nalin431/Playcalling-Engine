@@ -50,7 +50,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Chicago Bears Playcalling Engine © 2024</p>
+        <p>Chicago Bears Playcalling Engine 2026</p>
       </footer>
     </div>
   );
