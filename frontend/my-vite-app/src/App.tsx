@@ -15,6 +15,7 @@ function App() {
 
   const handleSituationSubmit = async (situation: GameSituation) => {
     setGameSituation(situation);
+    setBestPlayRecommendation(null);
     setIsLoadingRecommendation(true);
     
     // Generate predictions and recommendations
@@ -49,9 +50,10 @@ function App() {
               />
             </div>
             
-            <div className="results-column">
+            {/* <div className="results-column">
               <OpponentBreakdown breakdown={opponentBreakdown} />
-            </div>
+            </div> */}
+            
           </div>
         </div>
       </main>

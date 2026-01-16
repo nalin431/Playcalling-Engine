@@ -35,18 +35,14 @@ def _base_features(situation: Dict[str, Any]) -> Dict[str, Any]:
         "down": situation.get("down"),
         "ydstogo": situation.get("distance"),
         "yardline_100": situation.get("fieldPosition"),
-        "goal_to_go": 1 if situation.get("fieldPosition", 100) <= situation.get("distance", 0) else 0,
         "game_seconds_remaining": time_remaining_seconds + (4 - situation.get("quarter", 1)) * 900,
         "half_seconds_remaining": time_remaining_seconds + (2 - ((situation.get("quarter", 1) - 1) % 2 + 1)) * 900,
         "score_differential": situation.get("scoreDifference"),
         "posteam_timeouts_remaining": situation.get("posteam_timeouts_remaining", 3),
         "defteam_timeouts_remaining": situation.get("defteam_timeouts_remaining", 3),
-         "shotgun": 0,
         "no_huddle": 0,
-        "posteam": "CHI",
         "defteam": situation.get("opponent"),
         "posteam_type": "home",
-     
     }
 
 
@@ -54,39 +50,44 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
     candidates: List[Dict[str, Any]] = []
 
     run_locations = ["left", "middle", "right"]
-    run_gaps = ["guard", "tackle"]
+    run_gaps = ["guard", "tackle", "end"]
     run_players = ["D.Swift", "K.Monangai"]
     pass_locations = ["left", "middle", "right"]
     pass_depths = ["short", "medium", "deep"]
+    shotgun = ["shotgun", "under_center"]
 
-    for location in run_locations:
-        for gap in run_gaps:
-            for player in run_players:
+    for formation in shotgun:
+        for location in run_locations:
+            for gap in run_gaps:
+                for player in run_players:
+                    candidates.append(
+                        {
+                            **base,
+                            "play_type": "run",
+                            "run_location": location,
+                            "run_gap": gap,
+                            "run_player": player,
+                            "pass_location": "unknown",
+                            "pass_depth_bucket": "not_pass",
+                            "shotgun": formation
+                        }
+                    )
+
+    for formation in shotgun:
+        for location in pass_locations:
+            for depth in pass_depths:
                 candidates.append(
                     {
                         **base,
-                        "play_type": "run",
-                        "run_location": location,
-                        "run_gap": gap,
-                        "run_player": player,
-                        "pass_location": "unknown",
-                        "pass_depth_bucket": "not_pass",
+                        "play_type": "pass",
+                        "run_location": "unknown",
+                        "run_gap": "unknown",
+                        "run_player": "not_run",
+                        "pass_location": location,
+                        "pass_depth_bucket": depth,
+                        "shotgun": formation
                     }
                 )
-
-    for location in pass_locations:
-        for depth in pass_depths:
-            candidates.append(
-                {
-                    **base,
-                    "play_type": "pass",
-                    "run_location": "unknown",
-                    "run_gap": "unknown",
-                    "run_player": "not_run",
-                    "pass_location": location,
-                    "pass_depth_bucket": depth,
-                }
-            )
 
     return candidates
 
@@ -110,6 +111,7 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
                 "run_player": candidate.get("run_player"),
                 "pass_location": candidate.get("pass_location"),
                 "pass_depth_bucket": candidate.get("pass_depth_bucket"),
+                "shotgun": candidate.get("shotgun"),
                 "success_prob": success_prob,
                 "expected_yards": expected_yards,
             }
@@ -131,8 +133,8 @@ def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     sample = {
-        "down": 3,
-        "distance": 1,
+        "down": 1,
+        "distance": 10,
         "fieldPosition": 63,
         "quarter": 3,
         "timeRemaining": "08:09",

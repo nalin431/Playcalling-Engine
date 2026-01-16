@@ -39,6 +39,10 @@ pbp_offense["run_player"] = np.where(
 )
 
 
+###Shotgun v. Under Center
+pbp_offense["shotgun"] = np.where(pbp_offense["shotgun"] == 1, "shotgun", "under_center")
+
+
 
 # pass_depth_bucket
 if 'air_yards' in pbp_offense.columns:

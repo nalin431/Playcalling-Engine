@@ -43,14 +43,14 @@
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 2400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
 .results-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 2rem;
 }
 

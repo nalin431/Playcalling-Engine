@@ -19,20 +19,20 @@ def _normalize_probability(value: float) -> float:
 
 
 def _context_weights(situation: GameSituation) -> Dict[str, float]:
-    success_weight = 0.65
-    yards_weight = 0.35
+    success_weight = .8
+    yards_weight = .2
 
     if situation.down >= 3:
+        success_weight = 0.98
+        yards_weight = 0.02
+
+    if situation.yardline_100 <= 20:
         success_weight = 0.9
         yards_weight = 0.1
 
-    if situation.yardline_100 <= 20:
-        success_weight = 0.8
-        yards_weight = 0.2
-
     if situation.quarter == 4 and situation.time_remaining_seconds <= 480 and situation.score_difference > 0:
-        success_weight = 0.85
-        yards_weight = 0.15
+        success_weight = 0.93
+        yards_weight = 0.07
 
     if situation.quarter >= 3 and situation.score_difference < -7:
         success_weight = 0.55

@@ -32,16 +32,19 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
   };
 
   const formatPlay = (play: RecommendationPlay) => {
+    const shotgun = play.shotgun
+      ? play.shotgun.replace(/_/g, ' ').toUpperCase()
+      : 'UNKNOWN';
     if (play.type === 'run') {
       const location = play.run_location ? play.run_location.toUpperCase() : 'UNKNOWN';
       const gap = play.run_gap ? play.run_gap.toUpperCase() : 'UNKNOWN';
-      const player = play.run_player ? ` • ${play.run_player}` : '';
-      return `RUN • ${location} ${gap}${player}`;
+      const player = play.run_player ? ` - ${play.run_player}` : '';
+      return `RUN - ${shotgun} - ${location} ${gap}${player}`;
     }
 
     const depth = play.pass_depth_bucket ? play.pass_depth_bucket.toUpperCase() : 'UNKNOWN';
     const location = play.pass_location ? play.pass_location.toUpperCase() : 'UNKNOWN';
-    return `PASS • ${depth} ${location}`;
+    return `PASS - ${shotgun} - ${depth} ${location}`;
   };
 
   return (
@@ -130,4 +133,3 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
     </div>
   );
 }
-

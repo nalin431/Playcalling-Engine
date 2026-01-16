@@ -29,6 +29,7 @@ export interface RecommendationPlay {
   success_prob?: number;
   expected_yards?: number;
   score?: number;
+  shotgun?: string;
 }
 
 export interface PlayPrediction {

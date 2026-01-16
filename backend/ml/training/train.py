@@ -17,15 +17,12 @@ FEATURE_COLUMNS = [
     "down",
     "ydstogo",
     "yardline_100",
-    "goal_to_go",
     "game_seconds_remaining",
     "half_seconds_remaining",
     "score_differential",
     "posteam_timeouts_remaining",
     "defteam_timeouts_remaining",
-    "shotgun",
     "no_huddle",
-    "posteam",
     "defteam",
     "posteam_type",
     "play_type",
@@ -34,6 +31,7 @@ FEATURE_COLUMNS = [
     "run_player",
     "pass_location",
     "pass_depth_bucket",
+    "shotgun",
 ]
 
 TARGET_COLUMNS = ["success", "yards_gained"]
@@ -173,8 +171,8 @@ cb_reg = CatBoostRegressor(
     iterations=5000,
     depth=6,
     learning_rate=0.05,
-    loss_function="RMSE",
-    eval_metric="RMSE",
+    loss_function="Quantile:alpha=0.5",
+    eval_metric="Quantile:alpha=0.5",
     verbose=200,
     random_state=0,
 )
