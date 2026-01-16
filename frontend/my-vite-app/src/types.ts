@@ -7,6 +7,8 @@ export interface GameSituation {
   timeRemaining: string; // MM:SS format
   scoreDifference: number; // Bears score - Opponent score
   opponent: string;
+  posteam_timeouts_remaining?: number;
+  defteam_timeouts_remaining?: number;
 }
 
 export interface Play {

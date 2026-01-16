@@ -18,6 +18,8 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
       timeRemaining: '15:00',
       scoreDifference: 0,
       opponent: 'Packers',
+      posteam_timeouts_remaining: 3,
+      defteam_timeouts_remaining: 3,
     }
   );
 
@@ -103,6 +105,38 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
             value={situation.scoreDifference}
             onChange={(e) => setSituation({ ...situation, scoreDifference: parseInt(e.target.value) || 0 })}
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="posteamTimeouts">Bears Timeouts</label>
+          <select
+            id="posteamTimeouts"
+            value={situation.posteam_timeouts_remaining ?? 3}
+            onChange={(e) =>
+              setSituation({ ...situation, posteam_timeouts_remaining: parseInt(e.target.value) || 0 })
+            }
+          >
+            <option value={0}>0</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="defteamTimeouts">Opponent Timeouts</label>
+          <select
+            id="defteamTimeouts"
+            value={situation.defteam_timeouts_remaining ?? 3}
+            onChange={(e) =>
+              setSituation({ ...situation, defteam_timeouts_remaining: parseInt(e.target.value) || 0 })
+            }
+          >
+            <option value={0}>0</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+          </select>
         </div>
 
         <div className="form-group">

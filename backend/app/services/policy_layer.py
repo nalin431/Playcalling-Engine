@@ -18,27 +18,38 @@ def _normalize_probability(value: float) -> float:
     return value
 
 
-def _context_weights(situation: GameSituation) -> Dict[str, float]:
-    success_weight = .8
-    yards_weight = .2
+def _context_weights(s: GameSituation) -> Dict[str, float]:
+    # Base: success drives decisions, yards provides a small tie-breaker
+    success_w, yards_w = 0.80, 0.20
 
-    if situation.down >= 3:
-        success_weight = 0.98
-        yards_weight = 0.02
+    # 3rd/4th: your success label = conversion, so lean hard into it
+    if s.down >= 3:
+        success_w, yards_w = 0.95, 0.05
 
-    if situation.yardline_100 <= 20:
-        success_weight = 0.9
-        yards_weight = 0.1
+    # Red zone: efficiency / avoiding negatives matters more than raw yards
+    if s.yardline_100 <= 20:
+        success_w += 0.05
+        yards_w -= 0.05
 
-    if situation.quarter == 4 and situation.time_remaining_seconds <= 480 and situation.score_difference > 0:
-        success_weight = 0.93
-        yards_weight = 0.07
+    # Leading late (Q4 late or OT): reduce volatility
+    if (((s.quarter == 4) and (s.time_remaining_seconds <= 480)) or (s.quarter == 5)) and s.score_difference > 0:
+        success_w += 0.05
+        yards_w -= 0.05
 
-    if situation.quarter >= 3 and situation.score_difference < -7:
-        success_weight = 0.55
-        yards_weight = 0.45
+    # Trailing late (Q4 late or OT): allow more upside, scaled by deficit
+    if (((s.quarter == 4) and (s.time_remaining_seconds <= 600)) or (s.quarter == 5)) and s.score_difference < 0:
+        deficit = min(17.0, abs(float(s.score_difference)))
+        bump = 0.05 + 0.15 * (deficit / 17.0)  # 0.05..0.20
+        yards_w += bump
+        success_w -= bump
 
-    return {"success_weight": success_weight, "yards_weight": yards_weight}
+    #Normalize
+    success_w = max(0.05, success_w)
+    yards_w = max(0.02, yards_w)
+    total = success_w + yards_w
+
+    return {"success_weight": success_w / total, "yards_weight": yards_w / total}
+
 
 
 def _estimate_risk_level(candidate: Dict[str, Any]) -> str:
@@ -61,6 +72,28 @@ def _risk_penalty(level: str) -> float:
 
 
 def score_candidate(situation: GameSituation, candidate: Dict[str, Any]) -> float:
+    ##No deep or medium passes within the 5 yard line
+    if situation.yardline_100 <= 5 and situation.distance <= 5:
+        if candidate.get("type") == "pass":
+            depth = str(candidate.get("pass_depth_bucket", "")).lower()
+            if depth in {"medium", "deep"}:
+                return float("-inf")
+
+
+    ###2 minute drill behavior
+    if situation.quarter in {2, 4, 5} and situation.time_remaining_seconds <= 120 and situation.score_difference < 0:
+
+        # Down 2+ scores late → no runs unless very short
+        if situation.score_difference <= -9 and candidate.get("type") == "run" and situation.distance > 2:
+            return float("-inf")
+
+        # Need chunk fast → no short passes
+        if situation.time_remaining_seconds <= 90 and situation.distance >= 10:
+            if candidate.get("type") == "pass" and candidate.get("pass_depth_bucket") == "short":
+                return float("-inf")
+
+
+
     weights = _context_weights(situation)
     success_prob = _normalize_probability(float(candidate.get("success_prob", 0)))
     expected_yards = float(candidate.get("expected_yards", 0))
