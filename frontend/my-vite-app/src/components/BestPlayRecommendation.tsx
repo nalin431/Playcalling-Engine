@@ -74,7 +74,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
           <div className="play-metrics">
             <div className="metric">
               <span className="metric-label">Average Yards</span>
-              <span className="metric-value">{recommendation.expectedYards.toFixed(1)}</span>
+              <span className="metric-value">{recommendation.expectedYards.toFixed(2)}</span>
             </div>
             <div className="metric">
               <span className="metric-label">Success Rate</span>
@@ -88,7 +88,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
               <span className="metric-label">Model Score</span>
               <span className="metric-value">
                 {recommendation.recommendedPlay.score !== undefined
-                  ? recommendation.recommendedPlay.score.toFixed(5)
+                  ? recommendation.recommendedPlay.score.toFixed(6)
                   : 'N/A'}
               </span>
             </div>
