@@ -2,7 +2,6 @@ import type {
   GameSituation,
   PlayPrediction,
   OpponentBreakdown,
-  BestPlayRecommendation,
   Play,
 } from '../types';
 
@@ -126,13 +125,13 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
 
   // Determine play type based on down and distance
   if (situation.down === 1) {
-    predictedPlay = situation.yardage >= 8 ? mockPlays[2] : mockPlays[0]; // Pass on long 1st, run on short
+    predictedPlay = situation.distance >= 8 ? mockPlays[2] : mockPlays[0]; // Pass on long 1st, run on short
     factors.push('First down - balanced approach');
   } else if (situation.down === 2) {
-    if (situation.yardage <= 3) {
+    if (situation.distance <= 3) {
       predictedPlay = mockPlays[0]; // Run for short yardage
       factors.push('Short yardage situation');
-    } else if (situation.yardage >= 8) {
+    } else if (situation.distance >= 8) {
       predictedPlay = mockPlays[3]; // Deep pass
       factors.push('Long yardage - need big play');
     } else {
@@ -140,7 +139,7 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
       factors.push('Medium distance - high percentage play');
     }
   } else if (situation.down === 3) {
-    if (situation.yardage <= 3) {
+    if (situation.distance <= 3) {
       predictedPlay = mockPlays[0]; // Power run
       factors.push('Short yardage conversion attempt');
     } else {
@@ -149,7 +148,7 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
     }
   } else {
     // 4th down
-    predictedPlay = situation.yardage <= 2 ? mockPlays[0] : mockPlays[2];
+    predictedPlay = situation.distance <= 2 ? mockPlays[0] : mockPlays[2];
     factors.push('Fourth down - critical play');
   }
 
