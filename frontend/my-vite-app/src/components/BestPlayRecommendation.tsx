@@ -95,14 +95,14 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
           </div>
         </div>
 
-        <div className="reasoning">
+        {/* <div className="reasoning">
           <h4>Why This Play?</h4>
           <ul>
             {recommendation.reasoning.map((reason, index) => (
               <li key={index}>{reason}</li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         {recommendation.alternativePlays.length > 0 && (
           <div className="alternatives">
