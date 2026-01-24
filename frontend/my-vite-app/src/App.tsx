@@ -40,7 +40,7 @@ function App() {
               element={
                 <section className="hero">
                   <div className="hero-card">
-                    <p className="hero-kicker">Bears Analytics Lab</p>
+                    <p className="hero-kicker">Good! Better! Best!</p>
                     <h2>Playcall Engine</h2>
                     <p className="hero-blurb">
                       This project recommends play concepts based on game situation, opponent context, and
