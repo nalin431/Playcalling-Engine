@@ -20,7 +20,7 @@ def get_real_ip(request: Request):
     return get_remote_address(request)
 
 
-limiter = Limiter(key_func=get_real_ip, default_limits=["45/minute"])
+limiter = Limiter(key_func=get_real_ip, default_limits=["60/minute"])
 
 app = FastAPI()
 app.state.limiter = limiter
