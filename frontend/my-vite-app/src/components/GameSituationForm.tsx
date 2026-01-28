@@ -25,7 +25,11 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(situation);
+    const normalized = {
+      ...situation,
+      scoreDifference: parseInt(String(situation.scoreDifference), 10) || 0,
+    };
+    onSubmit(normalized);
   };
 
   return (
@@ -103,7 +107,12 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
             id="scoreDifference"
             type="number"
             value={situation.scoreDifference}
-            onChange={(e) => setSituation({ ...situation, scoreDifference: parseInt(e.target.value) || 0 })}
+            onChange={(e) => {
+              const raw = e.target.value;
+              const nextValue =
+                raw === '' || raw === '-' ? raw : parseInt(raw, 10) || 0;
+              setSituation({ ...situation, scoreDifference: nextValue });
+            }}
           />
         </div>
 

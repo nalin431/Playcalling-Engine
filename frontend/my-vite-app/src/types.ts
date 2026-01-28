@@ -5,7 +5,7 @@ export interface GameSituation {
   fieldPosition: number; // yards from own goal line
   quarter: number;
   timeRemaining: string; // MM:SS format
-  scoreDifference: number; // Bears score - Opponent score
+  scoreDifference: number | string; // Bears score - Opponent score
   opponent: string;
   posteam_timeouts_remaining?: number;
   defteam_timeouts_remaining?: number;
