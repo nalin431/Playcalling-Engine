@@ -119,6 +119,11 @@ const mockOpponentData: Record<string, Partial<OpponentBreakdown>> = {
 };
 
 export function predictPlay(situation: GameSituation): PlayPrediction {
+  const scoreDifference =
+    typeof situation.scoreDifference === 'string'
+      ? parseInt(situation.scoreDifference, 10) || 0
+      : situation.scoreDifference;
+
   // Simple prediction logic based on situation
   let predictedPlay: Play;
   const factors: string[] = [];
@@ -153,14 +158,14 @@ export function predictPlay(situation: GameSituation): PlayPrediction {
   }
 
   // Adjust based on score and time
-  if (situation.scoreDifference < -7) {
+  if (scoreDifference < -7) {
     factors.push('Trailing - more aggressive playcalling');
     if (situation.down <= 2) {
       predictedPlay = mockPlays[3]; // Deep pass
     }
   }
 
-  if (situation.quarter === 4 && situation.scoreDifference > 0) {
+  if (situation.quarter === 4 && scoreDifference > 0) {
     factors.push('Leading in 4th quarter - conservative approach');
     predictedPlay = mockPlays[0]; // Run to burn clock
   }
