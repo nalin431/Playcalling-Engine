@@ -26,6 +26,6 @@ jobs:
               env:
                 HEALTH_URL: ${{ secrets.HEALTH_URL }}
 
-              run: python healthcheck/ping.py
+              run: python HealthCheck/ping.py
 
             
