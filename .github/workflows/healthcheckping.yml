@@ -1,0 +1,31 @@
+name: Health Check
+
+on:
+    schedule:
+        - cron: '*/9 * * * *'
+
+    workflow_dispatch:  #manual trigger
+
+
+jobs:
+    ping:
+        runs-on: ubuntu-latest
+        steps:
+            -  name: Checkout Repo Code
+               uses: actions/checkout@v5
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.11'
+
+            - name: Install python depedencies
+              run: pip install requests
+
+            - name: Run ping
+              env:
+                HEALTH_URL: ${{ secrets.HEALTH_URL }}
+
+              run: python healthcheck/ping.py
+
+            
