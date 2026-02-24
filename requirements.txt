@@ -7,3 +7,4 @@ catboost
 joblib
 nflreadpy
 slowapi
+requests
