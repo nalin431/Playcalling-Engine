@@ -2,7 +2,7 @@ name: Health Check
 
 on:
     schedule:
-        - cron: '*/9 * * * *'
+        - cron: '*/10 * * * *'
 
     workflow_dispatch:  #manual trigger
 
@@ -11,6 +11,10 @@ jobs:
     ping:
         runs-on: ubuntu-latest
         steps:
+            - name: Randomized
+              run: sleep $((RANDOM % 239))
+              shell: bash
+
             -  name: Checkout Repo Code
                uses: actions/checkout@v4
 
