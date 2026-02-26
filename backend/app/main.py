@@ -20,7 +20,7 @@ def get_real_ip(request: Request):
     return get_remote_address(request)
 
 
-##rating limiting 
+##rate limiting 
 limiter = Limiter(key_func=get_real_ip, default_limits=["60/minute"])
 
 app = FastAPI()
@@ -37,7 +37,7 @@ app.add_middleware(
 )
 app.include_router(router)
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET","HEAD"])
 def health():
     return {"ok": True}
 
