@@ -1,4 +1,4 @@
-## Chicago Bears Playcalling Engine
+## Chicago Bears Playcalling Engine 
 
 This project is a Bears-focused playcall recommendation engine. It uses a backend
 API to score play concepts (run/pass, depth, direction, formation) and a frontend
