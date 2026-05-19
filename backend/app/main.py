@@ -1,4 +1,7 @@
+from contextlib import asynccontextmanager
+
 from .api.routes.recommend import router
+from .services.recommendation_service import _load_models
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,6 +15,12 @@ from fastapi.responses import JSONResponse
 
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.success_model, app.state.yards_model = _load_models()
+    yield
+
+
 def get_real_ip(request: Request):
     # X-Forwarded-For may contain a list: "client, proxy1, proxy2"
     forwarded = request.headers.get("x-forwarded-for")
@@ -23,7 +32,7 @@ def get_real_ip(request: Request):
 ##rate limiting 
 limiter = Limiter(key_func=get_real_ip, default_limits=["60/minute"])
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, lambda request, exc: JSONResponse({"detail": "Rate limit exceeded"}, status_code=429))
 app.add_middleware(SlowAPIMiddleware)

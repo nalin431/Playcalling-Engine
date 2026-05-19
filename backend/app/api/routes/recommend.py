@@ -1,7 +1,7 @@
 from backend.app.services.recommendation_service import recommend_play
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 router = APIRouter()
 
@@ -19,5 +19,5 @@ class Situation(BaseModel):
 
 
 @router.post("/recommend")
-def recommend(s: Situation):
-    return recommend_play(s.model_dump())
+def recommend(s: Situation, request: Request):
+    return recommend_play(s.model_dump(), request.app.state.success_model, request.app.state.yards_model)

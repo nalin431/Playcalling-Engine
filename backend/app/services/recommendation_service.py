@@ -92,10 +92,9 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
     return candidates
 
 
-def recommend_play(situation: Dict[str, Any]) -> Dict[str, Any]:
+def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: Any) -> Dict[str, Any]:
     base = _base_features(situation)
     candidates = _generate_candidates(base)
-    success_model, yards_model = _load_models()
 
     scored_candidates: List[Dict[str, Any]] = []
     for candidate in candidates:
@@ -142,6 +141,7 @@ if __name__ == "__main__":
         "opponent": "GB",
     }
 
-    test = recommend_play(sample)
+    s_model, y_model = _load_models()
+    test = recommend_play(sample, s_model, y_model)
     print(test)
 
