@@ -32,6 +32,7 @@ FEATURE_COLUMNS = [
     "pass_location",
     "pass_depth_bucket",
     "shotgun",
+    "offense_personnel",
 ]
 
 TARGET_COLUMNS = ["success", "yards_gained"]

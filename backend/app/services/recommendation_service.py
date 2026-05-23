@@ -55,39 +55,46 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
     pass_locations = ["left", "middle", "right"]
     pass_depths = ["short", "medium", "deep"]
     shotgun = ["shotgun", "under_center"]
+    offense_personnel = ["10", "11", "12", "13", "21", "22"]
 
-    for formation in shotgun:
-        for location in run_locations:
-            for gap in run_gaps:
-                for player in run_players:
+    for personnel in offense_personnel:
+        for formation in shotgun:
+            for location in run_locations:
+                # Middle runs have no gap in NFL PBP (null → "unknown"); left/right have guard/tackle/end
+                gaps = ["unknown"] if location == "middle" else run_gaps
+                for gap in gaps:
+                    for player in run_players:
+                        candidates.append(
+                            {
+                                **base,
+                                "play_type": "run",
+                                "run_location": location,
+                                "run_gap": gap,
+                                "run_player": player,
+                                "pass_location": "unknown",
+                                "pass_depth_bucket": "not_pass",
+                                "shotgun": formation,
+                                "offense_personnel": personnel,
+                            }
+                        )
+
+    for personnel in offense_personnel:
+        for formation in shotgun:
+            for location in pass_locations:
+                for depth in pass_depths:
                     candidates.append(
                         {
                             **base,
-                            "play_type": "run",
-                            "run_location": location,
-                            "run_gap": gap,
-                            "run_player": player,
-                            "pass_location": "unknown",
-                            "pass_depth_bucket": "not_pass",
-                            "shotgun": formation
+                            "play_type": "pass",
+                            "run_location": "unknown",
+                            "run_gap": "unknown",
+                            "run_player": "not_run",
+                            "pass_location": location,
+                            "pass_depth_bucket": depth,
+                            "shotgun": formation,
+                            "offense_personnel": personnel,
                         }
                     )
-
-    for formation in shotgun:
-        for location in pass_locations:
-            for depth in pass_depths:
-                candidates.append(
-                    {
-                        **base,
-                        "play_type": "pass",
-                        "run_location": "unknown",
-                        "run_gap": "unknown",
-                        "run_player": "not_run",
-                        "pass_location": location,
-                        "pass_depth_bucket": depth,
-                        "shotgun": formation
-                    }
-                )
 
     return candidates
 
@@ -113,6 +120,7 @@ def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: A
                 "shotgun": candidate.get("shotgun"),
                 "success_prob": success_prob,
                 "expected_yards": expected_yards,
+                "offense_personnel": candidate.get("offense_personnel"),
             }
         )
 
