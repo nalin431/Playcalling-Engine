@@ -32,6 +32,7 @@ export interface RecommendationPlay {
   expected_yards?: number;
   score?: number;
   shotgun?: string;
+  offense_personnel?: string;
 }
 
 export interface PlayPrediction {

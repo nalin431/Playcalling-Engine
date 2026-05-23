@@ -55,6 +55,16 @@
   letter-spacing: 1px;
 }
 
+.personnel-badge {
+  background: #C83803;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
 .risk-badge {
   color: white;
   padding: 0.75rem 1.5rem;
@@ -200,6 +210,14 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.alt-play-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
 .alt-play-type {
   display: inline-block;
   background: #0B162A;
@@ -208,7 +226,16 @@
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+}
+
+.alt-personnel-badge {
+  display: inline-block;
+  background: #C83803;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .alt-play-desc {

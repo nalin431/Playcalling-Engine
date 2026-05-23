@@ -31,6 +31,19 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
     }
   };
 
+  const formatPersonnel = (personnel?: string): string => {
+    const map: Record<string, string> = {
+      '10': '10 Personnel (4 WR)',
+      '11': '11 Personnel (1 RB / 1 TE)',
+      '12': '12 Personnel (1 RB / 2 TE)',
+      '13': '13 Personnel (1 RB / 3 TE)',
+      '21': '21 Personnel (2 RB / 1 TE)',
+      '22': '22 Personnel (2 RB / 2 TE)',
+    };
+    if (!personnel) return '';
+    return map[personnel] ?? `${personnel} Personnel`;
+  };
+
   const formatPlay = (play: RecommendationPlay) => {
     const shotgun = play.shotgun
       ? play.shotgun.replace(/_/g, ' ').toUpperCase()
@@ -54,6 +67,11 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
         <div className="recommendation-header">
           <div className="play-badge">
             <span className="play-type-badge">{recommendation.recommendedPlay.type.toUpperCase()}</span>
+            {recommendation.recommendedPlay.offense_personnel && (
+              <span className="personnel-badge">
+                {formatPersonnel(recommendation.recommendedPlay.offense_personnel)}
+              </span>
+            )}
             <span
               className="risk-badge"
               style={{ backgroundColor: getRiskColor(recommendation.riskLevel) }}
@@ -110,7 +128,14 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
             <div className="alternatives-grid">
               {recommendation.alternativePlays.map((play, index) => (
                 <div key={index} className="alternative-play">
-                  <span className="alt-play-type">{play.type.toUpperCase()}</span>
+                  <div className="alt-play-header">
+                    <span className="alt-play-type">{play.type.toUpperCase()}</span>
+                    {play.offense_personnel && (
+                      <span className="alt-personnel-badge">
+                        {formatPersonnel(play.offense_personnel)}
+                      </span>
+                    )}
+                  </div>
                   <p className="alt-play-desc">{formatPlay(play)}</p>
                   <div className="alt-play-stats">
                     <span>
