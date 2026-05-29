@@ -138,7 +138,7 @@ def recommend_best_play(situation: GameSituation, candidates: List[Dict[str, Any
         if concept_counts.get(key, 0) < 2:
             concept_counts[key] = concept_counts.get(key, 0) + 1
             alternatives.append(c)
-    alternatives = alternatives[:5]
+    alternatives = alternatives[:6]
 
     reasoning = []
     if situation.down >= 3:
