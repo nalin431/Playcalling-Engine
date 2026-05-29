@@ -125,7 +125,20 @@ def recommend_best_play(situation: GameSituation, candidates: List[Dict[str, Any
 
     scored.sort(key=lambda c: c["score"], reverse=True)
     best = scored[0]
-    alternatives = scored[1:4]
+
+    def _concept_key(c: Dict[str, Any]) -> tuple:
+        if c.get("type") == "run":
+            return ("run", c.get("run_location"), c.get("run_gap"))
+        return ("pass", c.get("pass_location"), c.get("pass_depth_bucket"))
+
+    concept_counts: Dict[tuple, int] = {}
+    alternatives = []
+    for c in scored[1:40]:
+        key = _concept_key(c)
+        if concept_counts.get(key, 0) < 2:
+            concept_counts[key] = concept_counts.get(key, 0) + 1
+            alternatives.append(c)
+    alternatives = alternatives[:5]
 
     reasoning = []
     if situation.down >= 3:

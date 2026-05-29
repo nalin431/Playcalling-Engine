@@ -49,10 +49,10 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
       ? play.shotgun.replace(/_/g, ' ').toUpperCase()
       : 'UNKNOWN';
     if (play.type === 'run') {
-      const location = play.run_location ? play.run_location.toUpperCase() : 'UNKNOWN';
-      const gap = play.run_gap ? play.run_gap.toUpperCase() : 'UNKNOWN';
+      const location = (play.run_location && play.run_location !== 'unknown') ? play.run_location.toUpperCase() : '';
+      const gap = (play.run_gap && play.run_gap !== 'unknown') ? ` ${play.run_gap.toUpperCase()}` : '';
       const player = play.run_player ? ` - ${play.run_player}` : '';
-      return `RUN - ${shotgun} - ${location} ${gap}${player}`;
+      return `RUN - ${shotgun} - ${location}${gap}${player}`;
     }
 
     const depth = play.pass_depth_bucket ? play.pass_depth_bucket.toUpperCase() : 'UNKNOWN';

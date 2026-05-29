@@ -56,7 +56,7 @@
 }
 
 .personnel-badge {
-  background: #C83803;
+  background: #FF6200;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -230,7 +230,7 @@
 
 .alt-personnel-badge {
   display: inline-block;
-  background: #C83803;
+  background: #FF6200;
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;

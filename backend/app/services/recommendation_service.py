@@ -55,7 +55,7 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
     pass_locations = ["left", "middle", "right"]
     pass_depths = ["short", "medium", "deep"]
     shotgun = ["shotgun", "under_center"]
-    offense_personnel = ["10", "11", "12", "13", "21", "22"]
+    offense_personnel = ["11", "12", "13"]
 
     for personnel in offense_personnel:
         for formation in shotgun:
