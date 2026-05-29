@@ -37,13 +37,14 @@ npm run preview    # Preview production build
 ### Request Flow
 `POST /recommend` → `recommendation_service.py` → `policy_layer.py` → response
 
-1. **Candidate generation** (`recommendation_service.py`): Builds ~36 candidate plays (18 runs × formations/locations/gaps/players + 18 passes × formations/locations/depths), then scores each using the loaded CatBoost pipelines.
-2. **Policy layer** (`policy_layer.py`): Applies context-aware scoring weights (default 80% success / 20% yards), adjusts for 3rd/4th down, red zone, and late-game scenarios, enforces hard constraints (e.g., no deep passes inside the 5-yard line), then returns the top play + 3 alternatives with reasoning text.
+1. **Candidate generation** (`recommendation_service.py`): Builds ~138 candidate plays — 84 runs (3 personnel groups `["11","12","13"]` × 2 formations × [2 directed locations × 3 gaps + middle × "unknown"] × 2 ball carriers) + 54 passes (3 personnel × 2 formations × 3 locations × 3 depths) — then scores each using the loaded CatBoost models. Middle runs use `run_gap="unknown"` to match the NFL PBP training distribution (middle runs have no recorded gap).
+2. **Policy layer** (`policy_layer.py`): Applies context-aware scoring weights (default 80% success / 20% yards), adjusts for 3rd/4th down, red zone, and late-game scenarios, enforces hard constraints (no medium/deep passes inside the 5-yard line; run/short-pass suppression in 2-minute drill when trailing), then returns the top play + up to 6 alternatives. Alternatives are deduplicated by concept key (max 2 per run-location/gap or pass-location/depth grouping) from the top 40 candidates.
 
 ### ML Models (`backend/ml/`)
-- `artifacts/success_classifier_CatBoost_pipeline.pkl` — predicts play success (down-specific threshold: 1st=40% yards gained, 2nd=60%, 3rd/4th=full conversion)
-- `artifacts/yards_gained_pipeline.pkl` — regresses expected yards
-- Both are sklearn `Pipeline` objects with `OneHotEncoder` for categoricals and `StandardScaler` for numerics, trained on historical Bears play data via `nflreadpy`
+- `artifacts/success_classifier_CatBoost_pipeline.pkl` — raw `CatBoostClassifier`; predicts play success (down-specific threshold: 1st=40% yards gained, 2nd=60%, 3rd/4th=full conversion)
+- `artifacts/yards_gained_pipeline.pkl` — raw `CatBoostRegressor` (quantile); regresses expected yards
+- Both accept DataFrames directly with native categorical handling (no sklearn preprocessing wrapper). 19 input features: `down`, `ydstogo`, `yardline_100`, `game_seconds_remaining`, `half_seconds_remaining`, `score_differential`, `posteam_timeouts_remaining`, `defteam_timeouts_remaining`, `no_huddle`, `defteam`, `posteam_type`, `play_type`, `run_location`, `run_gap`, `run_player`, `pass_location`, `pass_depth_bucket`, `shotgun`, `offense_personnel`
+- Trained on 2025 Chicago Bears play-by-play data via `nflreadpy`; split by `game_id` to prevent leakage. A logistic regression Pipeline also exists (`success_classifier_logisticregression_pipeline.pkl`) but is not used in production.
 
 ### API
 - `GET /health` — health check, returns `{"ok": true}`; supports HEAD (used by GitHub Actions cron)
@@ -53,7 +54,7 @@ npm run preview    # Preview production build
 ### Frontend (`frontend/my-vite-app/src/`)
 - Two routes: `/` (landing/explanation) and `/engine` (main form)
 - `GameSituationForm.tsx` — collects down, distance, field position, quarter, time remaining, score difference, opponent, timeouts
-- `BestPlayRecommendation.tsx` — displays recommended play, success probability, expected yards, risk level, reasoning, and alternatives
+- `BestPlayRecommendation.tsx` — displays recommended play, success probability, expected yards, risk level, and up to 6 alternative plays. Shows an offense personnel badge (e.g. "11 Personnel (1 RB / 1 TE)") on the recommended play and each alternative. `formatPlay` suppresses the `"unknown"` gap sentinel so middle runs render as `RUN - SHOTGUN - MIDDLE - D.Swift`.
 - API calls go through `services/apiService.ts`; the base URL is controlled by the `VITE_API_BASE` env var (defaults to `http://localhost:8000`)
 
 ### CI/CD
