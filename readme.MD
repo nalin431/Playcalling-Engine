@@ -22,16 +22,16 @@
 flowchart LR
     A["React Form\n(game situation)"] -->|"POST /recommend"| B["FastAPI\n(rate limited)"]
     B --> C["Recommendation\nService"]
-    C --> D["~60 Candidate\nPlays Generated"]
+    C --> D["~138 Candidate\nPlays Generated"]
     D --> E["CatBoost\nClassifier\nSuccess Prob."]
     D --> F["CatBoost\nRegressor\nExpected Yards"]
     E --> G["Policy Layer\n(context weights,\nhard constraints)"]
     F --> G
-    G -->|"Top play +\n3 alternatives"| B
+    G -->|"Top play +\n6 alternatives"| B
     B -->|JSON| A
 ```
 
-Each request generates ~60 candidate plays (runs × formations × locations × gaps × ball carriers; passes × formations × locations × depths), scores them through both models, then applies a context-aware policy layer that adjusts weights for down-and-distance, red zone, two-minute drill, and late-game scenarios before selecting the best play.
+Each request generates ~138 candidate plays — 3 personnel groups (11, 12, 13) × formations × run geometry (location × gap × ball carrier) + 3 personnel × formations × pass geometry (location × depth) — scores them through both models, then applies a context-aware policy layer that adjusts weights for down-and-distance, red zone, two-minute drill, and late-game scenarios before selecting the best play and up to 6 deduplicated alternatives.
 
 ---
 
@@ -48,6 +48,8 @@ Both models are trained on 2025 Chicago Bears offensive play-by-play data via `n
 - 1st down — gain ≥ 40% of yards to go
 - 2nd down — gain ≥ 60% of yards to go
 - 3rd / 4th down — full conversion
+
+**19 input features:** `down`, `ydstogo`, `yardline_100`, `game_seconds_remaining`, `half_seconds_remaining`, `score_differential`, `posteam_timeouts_remaining`, `defteam_timeouts_remaining`, `no_huddle`, `defteam`, `posteam_type`, `play_type`, `run_location`, `run_gap`, `run_player`, `pass_location`, `pass_depth_bucket`, `shotgun`, `offense_personnel` (11 / 12 / 13)
 
 > To see validation metrics, run `python backend/ml/training/train.py` and check the printed AUC, MAE, and RMSE output.
 
@@ -96,17 +98,24 @@ Set `VITE_API_BASE=http://localhost:8000` (default) or point to your deployed ba
 **Response:**
 ```json
 {
-  "best_play": {
+  "recommendedPlay": {
     "type": "pass",
     "shotgun": "shotgun",
     "pass_location": "middle",
     "pass_depth_bucket": "short",
+    "offense_personnel": "11",
     "success_prob": 0.61,
     "expected_yards": 8.2,
-    "risk_level": "medium",
-    "reasoning": "3rd & 7 — weighting heavily toward conversion. Short middle concept balances success probability with yards needed."
+    "score": 0.652341,
+    "run_location": "unknown",
+    "run_gap": "unknown",
+    "run_player": "not_run"
   },
-  "alternatives": [...]
+  "successProbability": 61.0,
+  "expectedYards": 8.2,
+  "riskLevel": "medium",
+  "reasoning": ["Third or fourth down - prioritize conversion."],
+  "alternativePlays": [...]
 }
 ```
 
