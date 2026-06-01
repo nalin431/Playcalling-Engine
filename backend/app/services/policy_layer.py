@@ -132,7 +132,7 @@ def recommend_best_play(situation: GameSituation, candidates: List[Dict[str, Any
 
     return {
         "recommendedPlay": best,
-        "successProbability": round(success_prob * 100, 1),
+        "successProbability": success_prob * 100,
         "expectedYards": float(best.get("expected_yards", 0)),
         "riskLevel": risk_level,
         "alternativePlays": alternatives,

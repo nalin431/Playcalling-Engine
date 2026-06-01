@@ -90,7 +90,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
 
               <div className="metric">
                 <span className="metric-label">Success Probability</span>
-                <span className="metric-value">{recommendation.successProbability}%</span>
+                <span className="metric-value">{Number(recommendation.successProbability).toPrecision(4)}%</span>
               </div>
             
             
@@ -103,7 +103,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
               <span className="metric-label">Model Score</span>
               <span className="metric-value">
                 {recommendation.recommendedPlay.score !== undefined
-                  ? recommendation.recommendedPlay.score.toFixed(6)
+                  ? Number(recommendation.recommendedPlay.score).toPrecision(5)
                   : 'N/A'}
               </span>
             </div>
@@ -132,7 +132,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
                   <div className="alt-play-stats">
                     <span>
                       {play.success_prob !== undefined
-                        ? `${(play.success_prob * 100).toFixed(1)}% success`
+                        ? `${Number(play.success_prob * 100).toPrecision(4)}% success`
                         : 'Success N/A'}
                     </span>
                     <span>
@@ -142,7 +142,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
                     </span>
                     <span>
                     {play.score !== undefined
-                        ? `${play.score.toFixed(3)} Model Score`
+                        ? `${play.score.toFixed(5)} Model Score`
                         : 'Score N/A'}
                     </span>
                   </div>
