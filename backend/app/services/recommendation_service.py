@@ -41,8 +41,7 @@ def _base_features(situation: Dict[str, Any]) -> Dict[str, Any]:
         "posteam_timeouts_remaining": situation.get("posteam_timeouts_remaining", 3),
         "defteam_timeouts_remaining": situation.get("defteam_timeouts_remaining", 3),
         "no_huddle": 0,
-        "defteam": situation.get("opponent"),
-        "posteam_type": "home",
+        "posteam_type": situation.get("posteam_type", "home"),
     }
 
 
@@ -103,12 +102,13 @@ def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: A
     base = _base_features(situation)
     candidates = _generate_candidates(base)
 
-    scored_candidates: List[Dict[str, Any]] = []
-    for candidate in candidates:
-        X = pd.DataFrame([candidate])
-        success_prob = float(success_model.predict_proba(X)[0][1])
-        expected_yards = float(yards_model.predict(X)[0])
+    # Batch scoring: build one DataFrame, reindex to trained feature order, score once each
+    df_all = pd.DataFrame(candidates).reindex(columns=success_model.feature_names_, fill_value="unknown")
+    success_probs = success_model.predict_proba(df_all)[:, 1]
+    expected_yards_arr = yards_model.predict(df_all)
 
+    scored_candidates: List[Dict[str, Any]] = []
+    for i, candidate in enumerate(candidates):
         scored_candidates.append(
             {
                 "type": candidate["play_type"],
@@ -118,8 +118,8 @@ def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: A
                 "pass_location": candidate.get("pass_location"),
                 "pass_depth_bucket": candidate.get("pass_depth_bucket"),
                 "shotgun": candidate.get("shotgun"),
-                "success_prob": success_prob,
-                "expected_yards": expected_yards,
+                "success_prob": float(success_probs[i]),
+                "expected_yards": float(expected_yards_arr[i]),
                 "offense_personnel": candidate.get("offense_personnel"),
             }
         )
@@ -134,7 +134,7 @@ def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: A
     )
 
 
-    
+
     return recommend_best_play(policy_situation, scored_candidates)
 
 
@@ -146,10 +146,9 @@ if __name__ == "__main__":
         "quarter": 3,
         "timeRemaining": "08:09",
         "scoreDifference": 0,
-        "opponent": "GB",
+        "posteam_type": "home",
     }
 
     s_model, y_model = _load_models()
     test = recommend_play(sample, s_model, y_model)
     print(test)
-
