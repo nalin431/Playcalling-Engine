@@ -88,19 +88,11 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
         <div className="recommended-play">
           <h3>{formatPlay(recommendation.recommendedPlay)}</h3>
           <p className="formation">Play Type: {recommendation.recommendedPlay.type.toUpperCase()}</p>
-          
+
           <div className="play-metrics">
             <div className="metric">
-              <span className="metric-label">Average Yards</span>
+              <span className="metric-label">Projected Yards</span>
               <span className="metric-value">{recommendation.expectedYards.toFixed(2)}</span>
-            </div>
-            <div className="metric">
-              <span className="metric-label">Success Rate</span>
-              <span className="metric-value">
-                {recommendation.recommendedPlay.success_prob
-                  ? `${(recommendation.recommendedPlay.success_prob * 100).toFixed(1)}%`
-                  : 'N/A'}
-              </span>
             </div>
             <div className="metric">
               <span className="metric-label">Model Score</span>
@@ -111,16 +103,11 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
               </span>
             </div>
           </div>
-        </div>
 
-        {/* <div className="reasoning">
-          <h4>Why This Play?</h4>
-          <ul>
-            {recommendation.reasoning.map((reason, index) => (
-              <li key={index}>{reason}</li>
-            ))}
-          </ul>
-        </div> */}
+          <p className="confidence-note">
+            Directional estimate from a single-season model (~19 games, ~48% league-baseline success). Built to inform play-calling, not replace it.
+          </p>
+        </div>
 
         {recommendation.alternativePlays.length > 0 && (
           <div className="alternatives">
@@ -145,7 +132,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
                     </span>
                     <span>
                       {play.expected_yards !== undefined
-                        ? `${play.expected_yards.toFixed(2)} avg yds`
+                        ? `${play.expected_yards.toFixed(2)} proj yds`
                         : 'Yards N/A'}
                     </span>
                     <span>

@@ -252,3 +252,12 @@
   margin-top: 0.5rem;
 }
 
+.confidence-note {
+  font-size: 0.78rem;
+  color: #888;
+  font-style: italic;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+

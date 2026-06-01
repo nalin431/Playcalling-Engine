@@ -43,8 +43,8 @@ function App() {
                     <p className="hero-kicker">Good! Better! Best!</p>
                     <h2>Playcall Engine</h2>
                     <p className="hero-blurb">
-                      This project recommends play concepts based on game situation, opponent context, and
-                      model-based outcomes. It is designed to surface the best call and explain why it wins.
+                      This project recommends play concepts from game situation and model-based outcomes,
+                      giving the highest-scored call and strong alternatives.
                     </p>
                     <div className="hero-section">
                       <h3>How It Works</h3>
@@ -60,8 +60,9 @@ function App() {
                         True NFL play calls are proprietary. This version relies on public data (PFF/ESPN),
                         which lacks formation-level detail and some play-action or screen designations. For now,
                         recommendations focus on play concepts (run/pass, depth, and direction) rather than
-                        specific named plays. A new version with more features is in progress. 
-                
+                        specific named plays. A new version with more features is in progress.
+                        Models are trained on a single Bears season (~19 games); outputs are directional
+                        estimates, not ground-truth predictions.
                       </p>
                     </div>
                     <div className="hero-definition">

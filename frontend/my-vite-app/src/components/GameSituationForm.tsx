@@ -12,12 +12,11 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
     initialSituation || {
       down: 1,
       distance: 10,
-      //yardage: 10,
       fieldPosition: 25,
       quarter: 1,
       timeRemaining: '15:00',
       scoreDifference: 0,
-      opponent: 'Packers',
+      posteam_type: 'home',
       posteam_timeouts_remaining: 3,
       defteam_timeouts_remaining: 3,
     }
@@ -149,14 +148,17 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
         </div>
 
         <div className="form-group">
-          <label htmlFor="opponent">Opponent</label>
-          <input
-            id="opponent"
-            type="text"
-            value={situation.opponent}
-            onChange={(e) => setSituation({ ...situation, opponent: e.target.value })}
-            placeholder="Packers"
-          />
+          <label htmlFor="posteamType">Home / Away</label>
+          <select
+            id="posteamType"
+            value={situation.posteam_type}
+            onChange={(e) =>
+              setSituation({ ...situation, posteam_type: e.target.value as 'home' | 'away' })
+            }
+          >
+            <option value="home">Home</option>
+            <option value="away">Away</option>
+          </select>
         </div>
       </div>
 
@@ -166,4 +168,3 @@ export default function GameSituationForm({ onSubmit, initialSituation }: GameSi
     </form>
   );
 }
-

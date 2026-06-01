@@ -1,24 +1,13 @@
 export interface GameSituation {
   down: number;
   distance: number;
-  //yardage: number; // yards to go
   fieldPosition: number; // yards from own goal line
   quarter: number;
   timeRemaining: string; // MM:SS format
   scoreDifference: number | string; // Bears score - Opponent score
-  opponent: string;
+  posteam_type: 'home' | 'away';
   posteam_timeouts_remaining?: number;
   defteam_timeouts_remaining?: number;
-}
-
-export interface Play {
-  id: string;
-  type: 'run' | 'pass' | 'play-action' | 'screen' | 'trick';
-  formation: string;
-  description: string;
-  successRate: number; // percentage
-  yardsPerPlay: number;
-  usageCount: number;
 }
 
 export interface RecommendationPlay {
@@ -35,31 +24,10 @@ export interface RecommendationPlay {
   offense_personnel?: string;
 }
 
-export interface PlayPrediction {
-  predictedPlay: Play;
-  confidence: number;
-  factors: string[];
-}
-
-export interface OpponentBreakdown {
-  opponent: string;
-  defensiveTendencies: {
-    runDefense: number; // rating 1-100
-    passDefense: number;
-    blitzFrequency: number; // percentage
-    coverageType: 'man' | 'zone' | 'mixed';
-  };
-  weaknesses: string[];
-  strengths: string[];
-  recentFormation: string;
-}
-
 export interface BestPlayRecommendation {
   recommendedPlay: RecommendationPlay;
-  reasoning: string[];
   successProbability: number;
   expectedYards: number;
   riskLevel: 'low' | 'medium' | 'high';
   alternativePlays: RecommendationPlay[];
 }
-

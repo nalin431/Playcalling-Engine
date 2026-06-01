@@ -24,20 +24,20 @@ flowchart LR
     B --> C["Recommendation\nService"]
     C --> D["~138 Candidate\nPlays Generated"]
     D --> E["CatBoost\nClassifier\nSuccess Prob."]
-    D --> F["CatBoost\nRegressor\nExpected Yards"]
+    D --> F["CatBoost\nRegressor\nProjected Yards"]
     E --> G["Policy Layer\n(context weights,\nhard constraints)"]
     F --> G
     G -->|"Top play +\n6 alternatives"| B
     B -->|JSON| A
 ```
 
-Each request generates ~138 candidate plays — 3 personnel groups (11, 12, 13) × formations × run geometry (location × gap × ball carrier) + 3 personnel × formations × pass geometry (location × depth) — scores them through both models, then applies a context-aware policy layer that adjusts weights for down-and-distance, red zone, two-minute drill, and late-game scenarios before selecting the best play and up to 6 deduplicated alternatives.
+Each request generates ~138 candidate plays — 3 personnel groups (11, 12, 13) × formations × run geometry (location × gap × ball carrier) + 3 personnel × formations × pass geometry (location × depth) — scores them through both models in a single batched call, then applies a context-aware policy layer that adjusts weights for down-and-distance, red zone, two-minute drill, and late-game scenarios before selecting the best play and up to 6 deduplicated alternatives.
 
 ---
 
 ## ML Models
 
-Both models are trained on 2025 Chicago Bears offensive play-by-play data via `nflreadpy`, split by `game_id` to prevent data leakage.
+Both models are trained on 2025 Chicago Bears offensive play-by-play data via `nflreadpy`, split by `game_id` to prevent data leakage. The engine is opponent-agnostic and situation-driven; `posteam_type` (home/away) is collected from the user and fed directly to the model.
 
 | Model | Algorithm | Task | Eval Metric |
 |-------|-----------|------|-------------|
@@ -45,11 +45,11 @@ Both models are trained on 2025 Chicago Bears offensive play-by-play data via `n
 | Yards Regressor | CatBoostRegressor (Quantile) | Continuous — how many yards does this play gain? | MAE / RMSE |
 
 **Success thresholds by down:**
-- 1st down — gain ≥ 40% of yards to go
-- 2nd down — gain ≥ 60% of yards to go
+- 1st down — gain >= 40% of yards to go
+- 2nd down — gain >= 60% of yards to go
 - 3rd / 4th down — full conversion
 
-**19 input features:** `down`, `ydstogo`, `yardline_100`, `game_seconds_remaining`, `half_seconds_remaining`, `score_differential`, `posteam_timeouts_remaining`, `defteam_timeouts_remaining`, `no_huddle`, `defteam`, `posteam_type`, `play_type`, `run_location`, `run_gap`, `run_player`, `pass_location`, `pass_depth_bucket`, `shotgun`, `offense_personnel` (11 / 12 / 13)
+**18 input features:** `down`, `ydstogo`, `yardline_100`, `game_seconds_remaining`, `half_seconds_remaining`, `score_differential`, `posteam_timeouts_remaining`, `defteam_timeouts_remaining`, `no_huddle`, `posteam_type`, `play_type`, `run_location`, `run_gap`, `run_player`, `pass_location`, `pass_depth_bucket`, `shotgun`, `offense_personnel` (11 / 12 / 13)
 
 > To see validation metrics, run `python backend/ml/training/train.py` and check the printed AUC, MAE, and RMSE output.
 
@@ -89,7 +89,7 @@ Set `VITE_API_BASE=http://localhost:8000` (default) or point to your deployed ba
   "quarter": 4,
   "timeRemaining": "02:30",
   "scoreDifference": -3,
-  "opponent": "GB",
+  "posteam_type": "home",
   "posteam_timeouts_remaining": 2,
   "defteam_timeouts_remaining": 1
 }
@@ -114,7 +114,6 @@ Set `VITE_API_BASE=http://localhost:8000` (default) or point to your deployed ba
   "successProbability": 61.0,
   "expectedYards": 8.2,
   "riskLevel": "medium",
-  "reasoning": ["Third or fourth down - prioritize conversion."],
   "alternativePlays": [...]
 }
 ```
@@ -136,7 +135,6 @@ backend/
     main.py               FastAPI app, CORS, rate limiting, lifespan model loading
     api/routes/           Endpoint handlers
     services/             recommendation_service.py, policy_layer.py
-    core/
   ml/
     features/             build_features.py — ETL from nflreadpy
     training/             train.py — CatBoost model training

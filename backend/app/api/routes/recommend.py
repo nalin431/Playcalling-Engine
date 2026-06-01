@@ -1,5 +1,5 @@
 from backend.app.services.recommendation_service import recommend_play
-from typing import Optional
+from typing import Literal
 from pydantic import BaseModel
 from fastapi import APIRouter, Request
 
@@ -12,7 +12,7 @@ class Situation(BaseModel):
     quarter: int
     timeRemaining: str
     scoreDifference: int
-    opponent: str
+    posteam_type: Literal["home", "away"] = "home"
     posteam_timeouts_remaining: int = 3
     defteam_timeouts_remaining: int = 3
 
