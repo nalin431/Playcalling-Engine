@@ -79,10 +79,7 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
               {recommendation.riskLevel.toUpperCase()} RISK
             </span>
           </div>
-          <div className="success-probability">
-            <span className="probability-label">Success Probability</span>
-            <span className="probability-value">{recommendation.successProbability}%</span>
-          </div>
+         
         </div>
 
         <div className="recommended-play">
@@ -90,10 +87,18 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
           <p className="formation">Play Type: {recommendation.recommendedPlay.type.toUpperCase()}</p>
 
           <div className="play-metrics">
+
+              <div className="metric">
+                <span className="metric-label">Success Probability</span>
+                <span className="metric-value">{recommendation.successProbability}%</span>
+              </div>
+            
+            
             <div className="metric">
               <span className="metric-label">Projected Yards</span>
               <span className="metric-value">{recommendation.expectedYards.toFixed(2)}</span>
             </div>
+
             <div className="metric">
               <span className="metric-label">Model Score</span>
               <span className="metric-value">
