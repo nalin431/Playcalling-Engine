@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 ##ML libraries
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
@@ -23,7 +23,6 @@ FEATURE_COLUMNS = [
     "posteam_timeouts_remaining",
     "defteam_timeouts_remaining",
     "no_huddle",
-    "defteam",
     "posteam_type",
     "play_type",
     "run_location",
@@ -92,7 +91,7 @@ ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 
 ######
-##Classifcation model training: scikit-learn logistic regression
+##Classification model training: scikit-learn logistic regression (validation baseline)
 ##Trained on success of plays
 ######
 clf = LogisticRegression(max_iter=10000, class_weight="balanced")
@@ -114,7 +113,7 @@ val_auc = roc_auc_score(y_val_success, val_probs)
 print(f"Validation accuracy for classification: {val_acc:.3f}")
 print(f"Validation AUC for classification: {val_auc:.3f}")
 
-#######################33
+#######################
 cat_features = [X_train.columns.get_loc(col) for col in categorical_cols]
 
 cb_clf = CatBoostClassifier(
@@ -137,33 +136,8 @@ val_auc = roc_auc_score(y_val_success, val_probs)
 print(f"Validation AUC for classification with CatBoost: {val_auc:.3f}")
 ###############################
 
-#Saving Classifcation to artifcats
-
-joblib.dump(clf_pipeline, ARTIFACTS_DIR / "success_classifier_logisticregression_pipeline.pkl")
+#Saving Classification to artifacts
 joblib.dump(cb_clf, ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl")
-
-
-
-########
-##Linear regression model training: scikit-learn linear regression
-##Trained on yards gained of plays
-###### 
-linregr = LinearRegression()
-
-# yards_gained_pipeline = Pipeline( 
-#     steps = [
-#          ("preprocess", clone(preprocessor)),
-#         ("model", linregr),
-#     ]
-# )
-
-# yards_gained_pipeline.fit(X_train, y_train_yards)
-
-# val_yards_preds = yards_gained_pipeline.predict(X_val)
-# val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
-# val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
-# print(f"Validation MAE for yards: {val_mae:.3f}")
-# print(f"Validation RMSE for yards: {val_rmse:.3f}")
 
 
 
@@ -192,10 +166,6 @@ val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
 val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
 print(f"Validation MAE for yards (CatBoost): {val_mae:.3f}")
 print(f"Validation RMSE for yards (CatBoost): {val_rmse:.3f}")
-
-
-
-
 
 
 joblib.dump(cb_reg, ARTIFACTS_DIR / "yards_gained_pipeline.pkl")
