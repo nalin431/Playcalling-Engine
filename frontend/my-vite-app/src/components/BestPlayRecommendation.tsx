@@ -1,12 +1,14 @@
-import type { BestPlayRecommendation as BestPlayRecommendationType, RecommendationPlay } from '../types';
+import type { BestPlayRecommendation as BestPlayRecommendationType, GameSituation, RecommendationPlay } from '../types';
+import { getReliabilityWarnings } from '../utils/reliability';
 import './BestPlayRecommendation.css';
 
 interface BestPlayRecommendationProps {
   recommendation: BestPlayRecommendationType | null;
   isLoading?: boolean;
+  situation?: GameSituation | null;
 }
 
-export default function BestPlayRecommendation({ recommendation, isLoading = false }: BestPlayRecommendationProps) {
+export default function BestPlayRecommendation({ recommendation, isLoading = false, situation = null }: BestPlayRecommendationProps) {
   if (!recommendation) {
     return (
       <div className="best-play-recommendation">
@@ -17,6 +19,8 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
       </div>
     );
   }
+
+  const warnings = situation ? getReliabilityWarnings(situation) : [];
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -85,6 +89,22 @@ export default function BestPlayRecommendation({ recommendation, isLoading = fal
         <div className="recommended-play">
           <h3>{formatPlay(recommendation.recommendedPlay)}</h3>
           <p className="formation">Play Type: {recommendation.recommendedPlay.type.toUpperCase()}</p>
+
+          {warnings.length > 0 && (
+            <div className="reliability-warning">
+              <p className="reliability-warning-lead">
+                <span className="reliability-warning-icon">⚠️</span>
+                <strong> Outside reliable range</strong>
+                <span className="reliability-warning-icon">⚠️</span>
+              </p>
+              <p className="reliability-warning-body">
+                This situation is uncommon in the model&apos;s training data and the model is extrapolating. Treat the numbers below as unreliable.
+              </p>
+              <p className="reliability-warning-reasons">
+                {warnings.join(' · ')}
+              </p>
+            </div>
+          )}
 
           <div className="play-metrics">
 

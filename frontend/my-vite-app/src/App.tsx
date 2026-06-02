@@ -93,6 +93,7 @@ function App() {
                       <BestPlayRecommendation
                         recommendation={bestPlayRecommendation}
                         isLoading={isLoadingRecommendation}
+                        situation={gameSituation}
                       />
                     </div>
                   </div>
