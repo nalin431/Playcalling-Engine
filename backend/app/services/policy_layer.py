@@ -75,12 +75,12 @@ def score_candidate(situation: GameSituation, candidate: Dict[str, Any]) -> floa
     ###2 minute drill behavior
     if situation.quarter in {2, 4, 5} and situation.time_remaining_seconds <= 120 and situation.score_difference < 0:
 
-        # Down 2+ scores late → no runs unless very short
-        if situation.score_difference <= -9 and candidate.get("type") == "run" and situation.distance > 2:
+        # Any deficit late → no runs unless very short yardage (QB sneaks etc. still allowed)
+        if candidate.get("type") == "run" and situation.distance > 2:
             return float("-inf")
 
-        # Need chunk fast → no short passes
-        if situation.time_remaining_seconds <= 90 and situation.distance >= 10:
+        # Need chunk yards fast → suppress short passes when 10+ to go
+        if situation.distance >= 10:
             if candidate.get("type") == "pass" and candidate.get("pass_depth_bucket") == "short":
                 return float("-inf")
 
