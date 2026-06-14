@@ -29,3 +29,7 @@ Thumbs.db
 # Claude Code
 .claude/settings.local.json
 .claude/worktrees/
+
+# QA / testing artifacts
+.playwright-mcp/
+qa/

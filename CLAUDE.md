@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Chicago Bears Playcalling Engine — a full-stack web app that recommends NFL play calls based on game situation. A FastAPI backend runs two CatBoost ML models (success classifier + yards regressor) through a policy layer that applies context-aware weights and hard constraints, then returns the top play with alternatives. A React/TypeScript frontend collects the game situation and displays results. End goal is a working system that provides useful insights to the Chicago Bears.
 
+**Important — prescriptive, not descriptive:** The engine recommends what play concepts had the highest success rate and most yards gained in the Bears' 2025 data for a given situation. It does NOT reflect what the Bears historically called or tend to call — it reflects what worked best when they did call it. The models are trained on plays the Bears actually ran, so they score play concepts within the Bears' observed distribution; they have no counterfactual knowledge of plays never attempted. Run-heavy outputs in many situations are a product of which play types succeeded at higher rates in that single-season dataset, not a reflection of playcalling tendencies.
+
 The engine is opponent-agnostic and situation-driven; `defteam` (opponent team abbreviation) was removed from the feature set because it contributed only ~0.02 AUC and was learned from a single season of data (~19 games). The `reasoning` field was also removed — it was hand-written situational copy, not a real model attribution.
 
 ## Commands
