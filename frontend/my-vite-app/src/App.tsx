@@ -40,29 +40,27 @@ function App() {
               element={
                 <section className="hero">
                   <div className="hero-card">
-                    <p className="hero-kicker">Good! Better! Best!</p>
+                    <p className="hero-kicker">Built on 2025 Chicago Bears play-by-play data</p>
                     <h2>Playcall Engine</h2>
                     <p className="hero-blurb">
-                      This project recommends play concepts from game situation and model-based outcomes,
-                      giving the highest-scored call and strong alternatives.
+                      Enter a game situation. See which play concepts gave the Bears the best chance of
+                      success, ranked by outcome data.
                     </p>
                     <div className="hero-section">
                       <h3>How It Works</h3>
                       <p>
-                        The engine uses two models: one predicts play success (defined below), and the other
-                        estimates expected yards. A policy layer blends those scores based on game context
-                        (down, distance, clock, and score) to keep recommendations realistic and situational.
+                        Two ML models score every candidate play: one predicts play success (defined below), the other
+                        projects expected yards. A policy layer blends those scores by game context (down,
+                        distance, clock, score, etc.) and returns the top call with up to six alternatives.
                       </p>
                     </div>
                     <div className="hero-section">
-                      <h3>Limitations</h3>
+                      <h3>What the Data Shows</h3>
                       <p>
-                        True NFL play calls are proprietary. This version relies on public data (PFF/ESPN),
-                        which lacks formation-level detail and some play-action or screen designations. For now,
-                        recommendations focus on play concepts (run/pass, depth, and direction) rather than
-                        specific named plays. A new version with more features is in progress.
-                        Models are trained on a single Bears season (~19 games); outputs are directional
-                        estimates, not ground-truth predictions.
+                        The 2025 Bears ran the ball very effectively. The engine and models reflects that run concepts rank
+                        highly across most situations. That's not a limitation; it's what the numbers show. Recommendations are play concepts (run/pass,
+                        direction, depth) drawn from a single Bears season (~19 games), so treat outputs as
+                        directional, not definitive.
                       </p>
                     </div>
                     <div className="hero-definition">
