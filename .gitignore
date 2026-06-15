@@ -9,6 +9,7 @@ backend/**/__pycache__/
 backend/**/.pytest_cache/
 backend/**/.venv/
 backend/**/*.pyc
+**/__pycache__/
 
 # Environment variables
 .env
