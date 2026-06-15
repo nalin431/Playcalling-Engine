@@ -30,8 +30,7 @@ catboost_info/
 Thumbs.db
 
 # Claude Code
-.claude/settings.local.json
-.claude/worktrees/
+.claude/
 
 # QA / testing artifacts
 .playwright-mcp/
