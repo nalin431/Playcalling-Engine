@@ -58,9 +58,7 @@ function App() {
                       <h3>What the Data Shows</h3>
                       <p>
                         The 2025 Bears ran the ball very effectively. The engine and models reflects that run concepts rank
-                        highly across most situations. That's not a limitation; it's what the numbers show. Recommendations are play concepts (run/pass,
-                        direction, depth) drawn from a single Bears season (~19 games), so treat outputs as
-                        directional, not definitive.
+                        highly across most situations. That's not a limitation; it's what the numbers show. Models are trained on 2025 data only, Ben Johnson's first season as offensive coordinator, because prior years reflect a different scheme entirely. Treat outputs as directional, not definitive.
                       </p>
                     </div>
                     <div className="hero-definition">
