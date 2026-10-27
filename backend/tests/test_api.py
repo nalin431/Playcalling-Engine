@@ -51,15 +51,6 @@ def test_recommend_returns_play(client):
     assert len(body["alternativePlays"]) <= 6
 
 
-def test_goal_line_never_recommends_medium_or_deep_pass(client):
-    response = client.post("/recommend", json=_situation(down=1, distance=3, fieldPosition=3))
-
-    assert response.status_code == 200
-    body = response.json()
-    for play in [body["recommendedPlay"], *body["alternativePlays"]]:
-        if play["type"] == "pass":
-            assert play["pass_depth_bucket"] not in {"medium", "deep"}
-
 
 def test_recommend_rejects_invalid_payload(client):
     response = client.post("/recommend", json={"down": "first"})

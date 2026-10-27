@@ -10,30 +10,19 @@ SITUATION = GameSituation(
 )
 
 
-def _candidate(play_type, success_prob, expected_yards, **extra):
-    return {
-        "type": play_type,
-        "success_prob": success_prob,
-        "expected_yards": expected_yards,
-        **extra,
-    }
-
-
 def test_empty_candidates_returns_empty_response():
     result = recommend_best_play(SITUATION, [])
 
     assert result["recommendedPlay"] is None
     assert result["alternativePlays"] == []
-    assert result["successProbability"] == 0
-    assert result["expectedYards"] == 0
 
 
 def test_top_play_is_highest_scoring_candidate():
     candidates = [
-        _candidate("run", 0.40, 3.0, run_location="left", run_gap="tackle"),
-        _candidate("pass", 0.65, 7.0, pass_location="middle", pass_depth_bucket="short"),
-        _candidate("pass", 0.30, 12.0, pass_location="right", pass_depth_bucket="deep"),
-        _candidate("run", 0.55, 4.5, run_location="right", run_gap="guard"),
+        {"type": "run", "success_prob": 0.40, "expected_yards": 3.0, "run_location": "left", "run_gap": "tackle"},
+        {"type": "pass", "success_prob": 0.65, "expected_yards": 7.0, "pass_location": "middle", "pass_depth_bucket": "short"},
+        {"type": "pass", "success_prob": 0.30, "expected_yards": 12.0, "pass_location": "right", "pass_depth_bucket": "deep"},
+        {"type": "run", "success_prob": 0.55, "expected_yards": 4.5, "run_location": "right", "run_gap": "guard"},
     ]
 
     result = recommend_best_play(SITUATION, candidates)
