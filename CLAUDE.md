@@ -22,6 +22,9 @@ python backend/ml/training/train.py
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Run tests (from repo root; needs requirements-dev.txt: pytest, httpx)
+python -m pytest backend/tests
 ```
 
 ### Frontend (from `frontend/my-vite-app/`)
@@ -58,6 +61,12 @@ npm run preview    # Preview production build
 - `BestPlayRecommendation.tsx` — displays recommended play, success probability, projected yards (median), model score, risk level, and up to 6 alternative plays. Shows an offense personnel badge (e.g. "11 Personnel (1 RB / 1 TE)") on the recommended play and each alternative. `formatPlay` suppresses the `"unknown"` gap sentinel so middle runs render as `RUN - SHOTGUN - MIDDLE - D.Swift`. A subtle confidence footnote on the card notes the single-season scope.
 - API calls go through `services/apiService.ts`; the base URL is controlled by the `VITE_API_BASE` env var (defaults to `http://localhost:8000`)
 
+### Tests (`backend/tests/`)
+- `test_policy_layer.py` — unit tests for `recommend_best_play` (empty candidates, top play is highest-scoring)
+- `test_api.py` — `TestClient(app)` used as a context manager so `lifespan` loads the real model artifacts; covers `/health` (GET/HEAD), `/recommend` response shape, and 422 on invalid input
+
 ### CI/CD
-- `.github/workflows/healthcheckping.yml` pings the backend health endpoint every 5 minutes via `HealthCheck/ping.py`; backend URL stored in GitHub secrets as `BACKEND_URL`
+- Workflow: feature branch → PR to `main` → checks → merge commit. The backend auto-deploys to Render from `main`.
+- `.github/workflows/backend-ci.yml` runs `python -m pytest backend/tests` on Python 3.11 for every PR to `main` and every push to `main` (job name `backend`)
+- `.github/workflows/healthcheckping.yml` pings the backend health endpoint every 5 minutes via `HealthCheck/ping.py`; the URL is stored in GitHub secrets as `HEALTH_URL`
 - Frontend is deployed to Vercel; `frontend/my-vite-app/vercel.json` configures SPA routing rewrites
