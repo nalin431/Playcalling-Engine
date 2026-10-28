@@ -1,5 +1,6 @@
 # Chicago Bears Playcalling Engine
 
+[![Backend CI](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
@@ -74,6 +75,14 @@ npm run dev
 
 Set `VITE_API_BASE=http://localhost:8000` (default) or point to your deployed backend.
 
+### Tests
+```bash
+pip install -r requirements-dev.txt
+python -m pytest backend/tests
+```
+
+The API tests load the real model artifacts and hit `/health` and `/recommend` end-to-end. The suite runs automatically on every pull request to `main` via GitHub Actions.
+
 ---
 
 ## API
@@ -139,6 +148,7 @@ backend/
     features/             build_features.py — ETL from nflreadpy
     training/             train.py — CatBoost model training
     artifacts/            Serialized model files (.pkl)
+  tests/                  pytest suite: policy layer + API
 frontend/
   my-vite-app/
     src/
@@ -147,6 +157,9 @@ frontend/
       types.ts
 HealthCheck/
   ping.py                 GitHub Actions health ping (prevents Render cold starts)
+.github/workflows/
+  backend-ci.yml          Runs the backend tests on every PR to main
+  healthcheckping.yml     Pings /health every 5 minutes
 ```
 
 ---
@@ -159,7 +172,7 @@ HealthCheck/
 | Backend | Python, FastAPI, slowapi (rate limiting) |
 | ML | CatBoost, scikit-learn, pandas, nflreadpy |
 | Deployment | Vercel (frontend), Render (backend) |
-| CI | GitHub Actions (health check every 5 min) |
+| CI | GitHub Actions (pytest on every PR, health check every 5 min) |
 
 ---
 
