@@ -1,6 +1,7 @@
 # Chicago Bears Playcalling Engine
 
-[![Backend CI](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml)
+[![Backend Functionality CI](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-ci.yml)
+[![Backend Lint CI](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-lint.yml/badge.svg)](https://github.com/nalin431/Playcalling-Engine/actions/workflows/backend-lint.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
@@ -159,6 +160,7 @@ HealthCheck/
   ping.py                 GitHub Actions health ping (prevents Render cold starts)
 .github/workflows/
   backend-ci.yml          Runs the backend tests on every PR to main
+  backend-lint.yml        Runs Ruff lint + format checks on every PR to main
   healthcheckping.yml     Pings /health every 5 minutes
 ```
 
@@ -172,7 +174,7 @@ HealthCheck/
 | Backend | Python, FastAPI, slowapi (rate limiting) |
 | ML | CatBoost, scikit-learn, pandas, nflreadpy |
 | Deployment | Vercel (frontend), Render (backend) |
-| CI | GitHub Actions (pytest on every PR, health check every 5 min) |
+| CI | GitHub Actions (pytest + Ruff on every PR, health check every 5 min) |
 
 ---
 

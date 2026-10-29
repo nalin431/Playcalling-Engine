@@ -67,6 +67,7 @@ npm run preview    # Preview production build
 
 ### CI/CD
 - Workflow: feature branch → PR to `main` → checks → merge commit. The backend auto-deploys to Render from `main`.
-- `.github/workflows/backend-ci.yml` runs `python -m pytest backend/tests` on Python 3.11 for every PR to `main` and every push to `main` (job name `backend`)
+- `.github/workflows/backend-ci.yml` ("Backend Functionality CI") runs `python -m pytest backend/tests` on Python 3.11 for every PR to `main` and every push to `main` (job name `backend`)
+- `.github/workflows/backend-lint.yml` ("Backend Lint CI") runs `ruff check` and `ruff format --check` on the same triggers (job name `lint`); Ruff is pinned in `requirements-dev.txt` so CI and local formatting match
 - `.github/workflows/healthcheckping.yml` pings the backend health endpoint every 5 minutes via `HealthCheck/ping.py`; the URL is stored in GitHub secrets as `HEALTH_URL`
 - Frontend is deployed to Vercel; `frontend/my-vite-app/vercel.json` configures SPA routing rewrites
