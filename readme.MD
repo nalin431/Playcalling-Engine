@@ -62,7 +62,7 @@ Both models are trained on 2025 Chicago Bears offensive play-by-play data via `n
 ### Backend
 ```bash
 pip install -r requirements.txt
-uvicorn backend.app.main:app --reload
+python -m uvicorn backend.app.main:app --reload
 # API available at http://localhost:8000
 ```
 
@@ -83,6 +83,14 @@ python -m pytest backend/tests
 ```
 
 The API tests load the real model artifacts and hit `/health` and `/recommend` end-to-end. The suite runs automatically on every pull request to `main` via GitHub Actions.
+
+### Linting
+```bash
+python -m ruff check --fix   # lint and auto-fix
+python -m ruff format        # format
+```
+
+A separate GitHub Actions workflow runs `ruff check` and `ruff format --check` on every pull request to `main`. It only reports problems and never changes code, so run the commands above before pushing.
 
 ---
 
