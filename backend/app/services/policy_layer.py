@@ -12,6 +12,11 @@ class GameSituation:
     score_difference: int
 
 
+
+
+
+
+
 def _normalize_probability(value: float) -> float:
     if value > 1:
         return value / 100.0
