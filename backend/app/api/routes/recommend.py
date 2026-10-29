@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request
 
 router = APIRouter()
 
+
 class Situation(BaseModel):
     down: int
     distance: int
@@ -17,7 +18,8 @@ class Situation(BaseModel):
     defteam_timeouts_remaining: int = 3
 
 
-
 @router.post("/recommend")
 def recommend(s: Situation, request: Request):
-    return recommend_play(s.model_dump(), request.app.state.success_model, request.app.state.yards_model)
+    return recommend_play(
+        s.model_dump(), request.app.state.success_model, request.app.state.yards_model
+    )

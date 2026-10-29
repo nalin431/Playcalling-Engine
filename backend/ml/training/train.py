@@ -7,7 +7,12 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, roc_auc_score, mean_absolute_error, mean_squared_error
+from sklearn.metrics import (
+    accuracy_score,
+    roc_auc_score,
+    mean_absolute_error,
+    mean_squared_error,
+)
 from catboost import CatBoostClassifier, CatBoostRegressor
 from sklearn.base import clone
 import joblib
@@ -36,7 +41,9 @@ FEATURE_COLUMNS = [
 
 TARGET_COLUMNS = ["success", "yards_gained"]
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "artifacts" / "pbp_offense_chi_2025.parquet"
+DATA_PATH = (
+    Path(__file__).resolve().parents[1] / "artifacts" / "pbp_offense_chi_2025.parquet"
+)
 
 
 ##reading in data, getting relevant data, and dropping na
@@ -125,20 +132,22 @@ cb_clf = CatBoostClassifier(
     verbose=200,
     random_state=0,
 )
-cb_clf.fit(X_train, y_train_success,
+cb_clf.fit(
+    X_train,
+    y_train_success,
     cat_features=cat_features,
     eval_set=(X_val, y_val_success),
     use_best_model=True,
-    early_stopping_rounds=200,)
+    early_stopping_rounds=200,
+)
 val_probs = cb_clf.predict_proba(X_val)[:, 1]
 
 val_auc = roc_auc_score(y_val_success, val_probs)
 print(f"Validation AUC for classification with CatBoost: {val_auc:.3f}")
 ###############################
 
-#Saving Classification to artifacts
+# Saving Classification to artifacts
 joblib.dump(cb_clf, ARTIFACTS_DIR / "success_classifier_CatBoost_pipeline.pkl")
-
 
 
 ###New CatboostRegressor Model Implementation
@@ -163,7 +172,7 @@ cb_reg.fit(
 
 val_yards_preds = cb_reg.predict(X_val)
 val_mae = mean_absolute_error(y_val_yards, val_yards_preds)
-val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** .5
+val_rmse = (mean_squared_error(y_val_yards, val_yards_preds)) ** 0.5
 print(f"Validation MAE for yards (CatBoost): {val_mae:.3f}")
 print(f"Validation RMSE for yards (CatBoost): {val_rmse:.3f}")
 
