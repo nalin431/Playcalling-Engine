@@ -2,7 +2,6 @@ import re
 import nflreadpy as nfl
 import pandas as pd
 import numpy as np
-import pyarrow as pa
 from pathlib import Path
 
 
