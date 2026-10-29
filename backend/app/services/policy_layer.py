@@ -32,24 +32,27 @@ def _context_weights(s: GameSituation) -> Dict[str, float]:
         yards_w -= 0.05
 
     # Leading late (Q4 late or OT): reduce volatility
-    if (((s.quarter == 4) and (s.time_remaining_seconds <= 480)) or (s.quarter == 5)) and s.score_difference > 0:
+    if (
+        ((s.quarter == 4) and (s.time_remaining_seconds <= 480)) or (s.quarter == 5)
+    ) and s.score_difference > 0:
         success_w += 0.05
         yards_w -= 0.05
 
     # Trailing late (Q4 late or OT): allow more upside, scaled by deficit
-    if (((s.quarter == 4) and (s.time_remaining_seconds <= 600)) or (s.quarter == 5)) and s.score_difference < 0:
+    if (
+        ((s.quarter == 4) and (s.time_remaining_seconds <= 600)) or (s.quarter == 5)
+    ) and s.score_difference < 0:
         deficit = min(17.0, abs(float(s.score_difference)))
         bump = 0.05 + 0.15 * (deficit / 17.0)  # 0.05..0.20
         yards_w += bump
         success_w -= bump
 
-    #Normalize
+    # Normalize
     success_w = max(0.05, success_w)
     yards_w = max(0.02, yards_w)
     total = success_w + yards_w
 
     return {"success_weight": success_w / total, "yards_weight": yards_w / total}
-
 
 
 def _estimate_risk_level(candidate: Dict[str, Any]) -> str:
@@ -71,30 +74,37 @@ def score_candidate(situation: GameSituation, candidate: Dict[str, Any]) -> floa
             if depth in {"medium", "deep"}:
                 return float("-inf")
 
-
     ###2 minute drill behavior
-    if situation.quarter in {2, 4, 5} and situation.time_remaining_seconds <= 120 and situation.score_difference < 0:
-
+    if (
+        situation.quarter in {2, 4, 5}
+        and situation.time_remaining_seconds <= 120
+        and situation.score_difference < 0
+    ):
         # Any deficit late → no runs unless very short yardage (QB sneaks etc. still allowed)
         if candidate.get("type") == "run" and situation.distance > 2:
             return float("-inf")
 
         # Need chunk yards fast → suppress short passes when 10+ to go
         if situation.distance >= 10:
-            if candidate.get("type") == "pass" and candidate.get("pass_depth_bucket") == "short":
+            if (
+                candidate.get("type") == "pass"
+                and candidate.get("pass_depth_bucket") == "short"
+            ):
                 return float("-inf")
-
-
 
     weights = _context_weights(situation)
     success_prob = _normalize_probability(float(candidate.get("success_prob", 0)))
     expected_yards = float(candidate.get("expected_yards", 0))
 
-    score = (weights["success_weight"] * success_prob) + (weights["yards_weight"] * (expected_yards / 10.0))
+    score = (weights["success_weight"] * success_prob) + (
+        weights["yards_weight"] * (expected_yards / 10.0)
+    )
     return score
 
 
-def recommend_best_play(situation: GameSituation, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def recommend_best_play(
+    situation: GameSituation, candidates: List[Dict[str, Any]]
+) -> Dict[str, Any]:
     if not candidates:
         return {
             "recommendedPlay": None,

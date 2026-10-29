@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List
 import pandas as pd
@@ -29,14 +28,18 @@ def _load_models() -> tuple[Any, Any]:
 
 
 def _base_features(situation: Dict[str, Any]) -> Dict[str, Any]:
-    time_remaining_seconds = _parse_time_remaining(situation.get("timeRemaining", "0:00"))
+    time_remaining_seconds = _parse_time_remaining(
+        situation.get("timeRemaining", "0:00")
+    )
 
     return {
         "down": situation.get("down"),
         "ydstogo": situation.get("distance"),
         "yardline_100": situation.get("fieldPosition"),
-        "game_seconds_remaining": time_remaining_seconds + (4 - situation.get("quarter", 1)) * 900,
-        "half_seconds_remaining": time_remaining_seconds + (2 - ((situation.get("quarter", 1) - 1) % 2 + 1)) * 900,
+        "game_seconds_remaining": time_remaining_seconds
+        + (4 - situation.get("quarter", 1)) * 900,
+        "half_seconds_remaining": time_remaining_seconds
+        + (2 - ((situation.get("quarter", 1) - 1) % 2 + 1)) * 900,
         "score_differential": situation.get("scoreDifference"),
         "posteam_timeouts_remaining": situation.get("posteam_timeouts_remaining", 3),
         "defteam_timeouts_remaining": situation.get("defteam_timeouts_remaining", 3),
@@ -98,12 +101,16 @@ def _generate_candidates(base: Dict[str, Any]) -> List[Dict[str, Any]]:
     return candidates
 
 
-def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: Any) -> Dict[str, Any]:
+def recommend_play(
+    situation: Dict[str, Any], success_model: Any, yards_model: Any
+) -> Dict[str, Any]:
     base = _base_features(situation)
     candidates = _generate_candidates(base)
 
     # Batch scoring: build one DataFrame, reindex to trained feature order, score once each
-    df_all = pd.DataFrame(candidates).reindex(columns=success_model.feature_names_, fill_value="unknown")
+    df_all = pd.DataFrame(candidates).reindex(
+        columns=success_model.feature_names_, fill_value="unknown"
+    )
     success_probs = success_model.predict_proba(df_all)[:, 1]
     expected_yards_arr = yards_model.predict(df_all)
 
@@ -129,11 +136,11 @@ def recommend_play(situation: Dict[str, Any], success_model: Any, yards_model: A
         distance=float(base["ydstogo"]),
         yardline_100=float(base["yardline_100"]),
         quarter=int(situation.get("quarter", 1)),
-        time_remaining_seconds=int(_parse_time_remaining(situation.get("timeRemaining", "0:00"))),
+        time_remaining_seconds=int(
+            _parse_time_remaining(situation.get("timeRemaining", "0:00"))
+        ),
         score_difference=int(base["score_differential"]),
     )
-
-
 
     return recommend_best_play(policy_situation, scored_candidates)
 

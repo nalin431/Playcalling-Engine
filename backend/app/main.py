@@ -12,9 +12,6 @@ from slowapi.middleware import SlowAPIMiddleware
 from fastapi.responses import JSONResponse
 
 
-
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.success_model, app.state.yards_model = _load_models()
@@ -29,24 +26,33 @@ def get_real_ip(request: Request):
     return get_remote_address(request)
 
 
-##rate limiting 
+##rate limiting
 limiter = Limiter(key_func=get_real_ip, default_limits=["60/minute"])
 
 app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, lambda request, exc: JSONResponse({"detail": "Rate limit exceeded"}, status_code=429))
+app.add_exception_handler(
+    RateLimitExceeded,
+    lambda request, exc: JSONResponse(
+        {"detail": "Rate limit exceeded"}, status_code=429
+    ),
+)
 app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","http://localhost:4173","https://playcalling-engine-bears.vercel.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "https://playcalling-engine-bears.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 app.include_router(router)
 
-@app.api_route("/health", methods=["GET","HEAD"])
+
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"ok": True}
-

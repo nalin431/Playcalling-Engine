@@ -48,8 +48,6 @@ def test_recommend_returns_play(client):
     assert body["recommendedPlay"] is not None
     assert body["recommendedPlay"]["type"] in {"run", "pass"}
     assert 0 <= body["successProbability"] <= 100
-    
-
 
 
 def test_recommend_rejects_invalid_payload(client):

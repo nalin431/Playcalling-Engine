@@ -1,4 +1,8 @@
-from backend.app.services.policy_layer import GameSituation, recommend_best_play, score_candidate
+from backend.app.services.policy_layer import (
+    GameSituation,
+    recommend_best_play,
+    score_candidate,
+)
 
 SITUATION = GameSituation(
     down=1,
@@ -19,10 +23,34 @@ def test_empty_candidates_returns_empty_response():
 
 def test_top_play_is_highest_scoring_candidate():
     candidates = [
-        {"type": "run", "success_prob": 0.40, "expected_yards": 3.0, "run_location": "left", "run_gap": "tackle"},
-        {"type": "pass", "success_prob": 0.65, "expected_yards": 7.0, "pass_location": "middle", "pass_depth_bucket": "short"},
-        {"type": "pass", "success_prob": 0.30, "expected_yards": 12.0, "pass_location": "right", "pass_depth_bucket": "deep"},
-        {"type": "run", "success_prob": 0.55, "expected_yards": 4.5, "run_location": "right", "run_gap": "guard"},
+        {
+            "type": "run",
+            "success_prob": 0.40,
+            "expected_yards": 3.0,
+            "run_location": "left",
+            "run_gap": "tackle",
+        },
+        {
+            "type": "pass",
+            "success_prob": 0.65,
+            "expected_yards": 7.0,
+            "pass_location": "middle",
+            "pass_depth_bucket": "short",
+        },
+        {
+            "type": "pass",
+            "success_prob": 0.30,
+            "expected_yards": 12.0,
+            "pass_location": "right",
+            "pass_depth_bucket": "deep",
+        },
+        {
+            "type": "run",
+            "success_prob": 0.55,
+            "expected_yards": 4.5,
+            "run_location": "right",
+            "run_gap": "guard",
+        },
     ]
 
     result = recommend_best_play(SITUATION, candidates)
