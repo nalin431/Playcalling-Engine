@@ -15,7 +15,7 @@ The engine is opponent-agnostic and situation-driven; `defteam` (opponent team a
 ### Backend
 ```bash
 # Run the API server (from repo root)
-uvicorn backend.app.main:app --reload
+python -m uvicorn backend.app.main:app --reload
 
 # Train ML models (also prints validation AUC, MAE, RMSE)
 python backend/ml/training/train.py
@@ -25,6 +25,10 @@ pip install -r requirements.txt
 
 # Run tests (from repo root; needs requirements-dev.txt: pytest, httpx)
 python -m pytest backend/tests
+
+# Lint and format (Ruff, pinned in requirements-dev.txt; CI checks both)
+python -m ruff check --fix
+python -m ruff format
 ```
 
 ### Frontend (from `frontend/my-vite-app/`)
